@@ -1,5 +1,6 @@
 # Standalone demo built from Git source. Assign an HTTPS domain to web in Coolify.
 # Supply all four passwords in Coolify; no local files, public database ports or tunnel.
+# Resolve paths from the repository root with --project-directory . (Coolify does this).
 x-backend-environment: &backend-environment
   DB_URL: jdbc:mysql://mysql:3306/worklog_demo?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true
   DB_USER: worklog_demo
@@ -17,7 +18,7 @@ x-backend-environment: &backend-environment
 
 x-backend: &backend
   build:
-    context: ..
+    context: .
     dockerfile: deploy/Dockerfile.coolify.backend
   user: "10001:10001"
   volumes:
@@ -97,7 +98,7 @@ services:
 
   web:
     build:
-      context: ..
+      context: .
       dockerfile: deploy/Dockerfile.coolify.web
     expose: ["80"]
     depends_on:

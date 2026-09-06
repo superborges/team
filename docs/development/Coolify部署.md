@@ -33,6 +33,14 @@ API 与 worker 均以 `10001:10001` 运行，共享 `exports` 命名卷；镜像
 
 四个变量没有内置值；缺失时 Compose 会停止部署。MySQL 初始化变量只对空数据卷生效，已有数据库修改密码需先执行数据库账号变更，再同步 Coolify 变量；仅修改变量不会重设数据库密码。
 
+Coolify v4.1.2 在 `build` 时也会解析完整 Compose，但构建环境不包含上述运行时口令。因此在 General 的 **Custom Build Command** 填入以下命令，使用仅对构建进程有效的普通占位值；**Custom Start Command** 保留默认值。Coolify 会自动补充 Compose 文件、项目名和仓库根目录参数，启动时再读取真实运行时口令。不要把占位值保存为运行时变量，也不要为真实口令打开 Available at Buildtime。
+
+```sh
+DB_ROOT_PASSWORD=build-only DB_APP_PASSWORD=build-only REDIS_PASSWORD=build-only DEMO_ACCESS_PASSWORD=build-only docker compose build
+```
+
+构建上下文以仓库根目录为准；本地运行同一文件时必须加 `--project-directory .`，与 Coolify 的路径解析保持一致。
+
 ## 使用与验收
 
 电脑端访问 `https://team.ninestories.cn/admin/`，手机端访问 `https://team.ninestories.cn/h5/`。先输入 `preview` 和配置的访问口令，再选择系统内的测试身份。页面使用 Secure 会话 Cookie，需要 HTTPS；不要改为普通 HTTP 来绕过访问问题。
@@ -48,13 +56,13 @@ API 与 worker 均以 `10001:10001` 运行，共享 `exports` 命名卷；镜像
 本地构建验证可在仓库根目录注入四项临时测试口令后执行以下命令；不要复用电脑上已有的 Compose 项目名或公开临时测试口令：
 
 ```sh
-docker compose -p team-coolify-check -f deploy/compose.coolify.yml config --quiet
-docker compose -p team-coolify-check -f deploy/compose.coolify.yml build
-docker compose -p team-coolify-check -f deploy/compose.coolify.yml up -d
-docker compose -p team-coolify-check -f deploy/compose.coolify.yml ps
-docker compose -p team-coolify-check -f deploy/compose.coolify.yml exec -T api curl --fail http://127.0.0.1:8081/actuator/health
-docker compose -p team-coolify-check -f deploy/compose.coolify.yml exec -T web wget -q -O /dev/null 'http://127.0.0.1/demo-access/login?target=h5'
-docker compose -p team-coolify-check -f deploy/compose.coolify.yml down
+docker compose --project-directory . -p team-coolify-check -f deploy/compose.coolify.yml config --quiet
+docker compose --project-directory . -p team-coolify-check -f deploy/compose.coolify.yml build
+docker compose --project-directory . -p team-coolify-check -f deploy/compose.coolify.yml up -d
+docker compose --project-directory . -p team-coolify-check -f deploy/compose.coolify.yml ps
+docker compose --project-directory . -p team-coolify-check -f deploy/compose.coolify.yml exec -T api curl --fail http://127.0.0.1:8081/actuator/health
+docker compose --project-directory . -p team-coolify-check -f deploy/compose.coolify.yml exec -T web wget -q -O /dev/null 'http://127.0.0.1/demo-access/login?target=h5'
+docker compose --project-directory . -p team-coolify-check -f deploy/compose.coolify.yml down
 ```
 
 这组命令不映射宿主机端口，适合验证干净源码构建、启动顺序与内部健康；可在 API 和 worker 容器中执行 `test -w /app/exports` 检查导出目录权限。完整浏览器验收在 Coolify 的 HTTPS 地址进行。`down` 保留验证卷；确认本地验证数据无保留价值后，仅清理 `team-coolify-check` 项目的三个验证卷。
