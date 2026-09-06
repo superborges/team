@@ -1,0 +1,45 @@
+/* One shared workflow keeps both entry points on the existing submit state machine. */
+.submission-panel { min-width: 0; }
+.submission-secondary { margin-block: var(--ts-space-16) var(--ts-space-8); }
+.submission-actionbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--ts-space-12);
+  margin-top: var(--ts-space-16);
+  padding: var(--ts-space-16) var(--ts-space-20);
+  border: 1px solid var(--ts-color-border);
+  border-radius: var(--ts-radius-card);
+  background: var(--ts-color-surface);
+}
+.submission-save-status { min-width: 0; font-size: var(--ts-type-caption); color: var(--ts-color-text-secondary); }
+.submission-save-status .saved, .submission-save-status .save-success { color: var(--ts-color-success); }
+.submission-main-actions { display: flex; align-items: center; gap: var(--ts-space-8); min-width: 0; }
+.submission-main-actions > button { margin: 0; min-height: var(--ts-size-control); }
+.submission-main-actions > .primary { min-width: 180px; }
+.onsite-submit.workflow-page { margin: var(--ts-space-16) 0 0; padding: 0; }
+.onsite-submit .submission-note { margin: var(--ts-space-8) 0 0; }
+
+@media (max-width: 767px) {
+  .submission-actionbar { padding: var(--ts-space-12); gap: var(--ts-space-8); }
+  .submission-main-actions { width: 100%; display: grid; grid-template-columns: 1fr 2fr; }
+  .submission-main-actions > button { width: 100%; min-width: 0; min-height: var(--ts-size-touch); padding-inline: var(--ts-space-8); font-size: var(--ts-type-body); }
+  .mobile-submission .submission-actionbar {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: var(--ts-z-sticky);
+    margin: 0;
+    border-inline: 0;
+    border-bottom: 0;
+    border-radius: 0;
+    padding: var(--ts-space-8) var(--ts-space-16) calc(var(--ts-space-12) + env(safe-area-inset-bottom));
+    box-shadow: var(--ts-shadow-sticky);
+  }
+  .mobile-submission .submission-save-status { width: 100%; line-height: 18px; }
+}
+/* Short visible viewports need document flow. Do not move actions on input blur:
+ * doing so can move Save between pointerdown and click and discard the click. */
+@media (max-width: 767px) and (max-height: 500px) {
+  .mobile-submission .submission-actionbar { position: static; border: 1px solid var(--ts-color-border); border-radius: var(--ts-radius-card); }
+}

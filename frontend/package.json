@@ -1,0 +1,23 @@
+{
+  "name": "worktime-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": ["apps/*", "packages/*"],
+  "engines": { "node": ">=22.12.0", "npm": ">=10" },
+  "scripts": {
+    "dev:admin": "npm run dev --workspace @worktime/admin",
+    "dev:h5": "npm run dev --workspace @worktime/h5",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "build:demo": "npm exec --workspace @worktime/admin -- vite build --mode demo --outDir dist-demo && npm exec --workspace @worktime/h5 -- vite build --mode demo --outDir dist-demo",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@vitejs/plugin-vue": "6.0.8",
+    "typescript": "5.9.3",
+    "vite": "8.2.2",
+    "vue-tsc": "3.3.11"
+  }
+}

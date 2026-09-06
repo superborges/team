@@ -1,0 +1,90 @@
+[
+  {
+    "name": "主按钮白字",
+    "foreground": "#FFFFFF",
+    "background": "#1664FF",
+    "ratio": 4.883,
+    "target": 4.5,
+    "pass": true
+  },
+  {
+    "name": "浅蓝底链接 / 信息标签",
+    "foreground": "#1259D5",
+    "background": "#EAF2FF",
+    "ratio": 5.458,
+    "target": 4.5,
+    "pass": true
+  },
+  {
+    "name": "正文白底",
+    "foreground": "#1F2937",
+    "background": "#FFFFFF",
+    "ratio": 14.679,
+    "target": 4.5,
+    "pass": true
+  },
+  {
+    "name": "辅助文字白底",
+    "foreground": "#667085",
+    "background": "#FFFFFF",
+    "ratio": 4.975,
+    "target": 4.5,
+    "pass": true
+  },
+  {
+    "name": "辅助文字页面底",
+    "foreground": "#667085",
+    "background": "#F5F7FA",
+    "ratio": 4.635,
+    "target": 4.5,
+    "pass": true
+  },
+  {
+    "name": "成功状态",
+    "foreground": "#087A52",
+    "background": "#E8F5EE",
+    "ratio": 4.782,
+    "target": 4.5,
+    "pass": true
+  },
+  {
+    "name": "警告状态",
+    "foreground": "#9B5A00",
+    "background": "#FFF4E5",
+    "ratio": 5.011,
+    "target": 4.5,
+    "pass": true
+  },
+  {
+    "name": "错误状态",
+    "foreground": "#C1323E",
+    "background": "#FFF0F0",
+    "ratio": 5.002,
+    "target": 4.5,
+    "pass": true
+  },
+  {
+    "name": "中性标签",
+    "foreground": "#526176",
+    "background": "#F2F4F7",
+    "ratio": 5.723,
+    "target": 4.5,
+    "pass": true
+  },
+  {
+    "name": "必要控件边界",
+    "foreground": "#8291A7",
+    "background": "#FFFFFF",
+    "ratio": 3.203,
+    "target": 3,
+    "pass": true
+  },
+  {
+    "name": "焦点轮廓 / 页面底",
+    "foreground": "#1664FF",
+    "background": "#F5F7FA",
+    "ratio": 4.549,
+    "target": 3,
+    "pass": true
+  }
+]

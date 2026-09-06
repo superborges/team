@@ -1,0 +1,47 @@
+# Protected preview only. This never publishes the Vite source server or the API port.
+name: allen-worklog-demo
+x-backend: &backend
+  image: eclipse-temurin:21-jre@sha256:7a65df4b22d2de92d4e04056e884f3b9122d70b21e2847fd66084278bd0ce037
+  user: "${DEMO_RUN_AS:-10001:10001}"
+  entrypoint: ["java", "-jar", "/app/backend.jar"]
+  env_file:
+    - path: ../.local/demo/backend.env
+      format: raw
+  volumes:
+    - ../.local/demo/backend.jar:/app/backend.jar:ro
+    - ../.local/demo/exports:/app/exports
+  read_only: true
+  tmpfs: ["/tmp"]
+  restart: unless-stopped
+services:
+  api:
+    <<: *backend
+    environment:
+      SPRING_PROFILES_ACTIVE: local,api
+      SERVER_ADDRESS: 0.0.0.0
+      SERVER_PORT: "8081"
+      APP_DEMO_ACCESS_ENABLED: "true"
+  worker:
+    <<: *backend
+    environment:
+      SPRING_PROFILES_ACTIVE: local,worker
+      APP_DEMO_ACCESS_ENABLED: "false"
+  web:
+    restart: unless-stopped
+    depends_on: [api]
+    image: nginx:stable-alpine@sha256:dc5069ad14f19660b141b21236140b91656bf89bbc3e2417c70ae650cd66104c
+    ports: ["127.0.0.1:8090:80"]
+    volumes:
+      - ./nginx.demo.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../frontend/apps/shared/tokens.css:/html/demo-access-tokens.css:ro
+      - ../frontend/apps/admin/dist-demo:/html/admin:ro
+      - ../frontend/apps/h5/dist-demo:/html/h5:ro
+    read_only: true
+    tmpfs: ["/var/cache/nginx", "/var/run", "/tmp"]
+  tunnel:
+    image: cloudflare/cloudflared:2026.8.3@sha256:51c9cefcb4569df44e1ad403ab1d3d8065aa8e84339bcfc6aee75502e1140339
+    command: ["tunnel", "--url", "http://web:80", "--no-autoupdate", "--protocol", "http2", "--edge-ip-version", "4", "--metrics", "0.0.0.0:20242", "--output", "json", "--grace-period", "5s"]
+    ports: ["127.0.0.1:20242:20242"]
+    depends_on: [web]
+    read_only: true
+    restart: unless-stopped

@@ -1,0 +1,120 @@
+.workflow-page { max-width: 1250px; min-width: 0; color: var(--ts-color-text); }
+.workflow-page h1 { margin: 0 0 var(--ts-space-8); color: var(--ts-color-text-strong); font-size: var(--ts-type-title); line-height: 32px; font-weight: 600; }
+.workflow-page h2 { margin: 0; color: var(--ts-color-text-strong); font-size: var(--ts-type-section); line-height: 24px; font-weight: 600; }
+.workflow-page p { margin: var(--ts-space-12) 0; line-height: 1.6; overflow-wrap: anywhere; }
+.workflow-page small, .workflow-note { color: var(--ts-color-text-muted); }
+.workflow-head, .workflow-between { display: flex; align-items: center; justify-content: space-between; gap: var(--ts-space-16); }
+.workflow-head { margin-bottom: var(--ts-space-24); }
+.workflow-head > *, .workflow-between > * { min-width: 0; overflow-wrap: anywhere; }
+.workflow-head p { margin: var(--ts-space-8) 0 0; color: var(--ts-color-text-secondary); }
+.workflow-panel { min-width: 0; margin: var(--ts-space-16) 0; padding: var(--ts-space-20); background: var(--ts-color-surface); border: 1px solid var(--ts-color-border); border-radius: var(--ts-radius-card); overflow-wrap: anywhere; }
+
+/* Native workflow controls only; Element Plus and Vant use theme.css. */
+:where(.workflow-page, .submission-panel, .workflow-native-modal) :where(button, select, input:not([type="checkbox"]):not([type="radio"]), textarea):where(:not([class*="el-"]):not([class*="van-"])) { min-width: 0; max-width: 100%; min-height: var(--ts-size-control); padding: var(--ts-space-8) var(--ts-space-12); border: 1px solid var(--ts-color-control-border); border-radius: var(--ts-radius-control); background: var(--ts-color-surface); color: var(--ts-color-text); font: inherit; line-height: 22px; transition: color var(--ts-motion-fast), background-color var(--ts-motion-fast), border-color var(--ts-motion-fast); }
+:is(.workflow-page, .submission-panel, .workflow-native-modal) :where(select, input:not([type="checkbox"]):not([type="radio"]), textarea):where(:not([class*="el-"]):not([class*="van-"])) { font-size: var(--ts-type-body); }
+:where(.workflow-page, .submission-panel, .workflow-native-modal) button:not([class*="el-"]):not([class*="van-"]) { padding-inline: var(--ts-space-16); cursor: pointer; }
+:where(.workflow-page, .submission-panel, .workflow-native-modal) textarea:not([class*="el-"]):not([class*="van-"]) { min-height: var(--ts-size-textarea-min); resize: vertical; }
+:where(.workflow-page, .submission-panel, .workflow-native-modal) :is(input, textarea)::placeholder { color: var(--ts-color-text-muted); opacity: 1; }
+:where(.workflow-page, .submission-panel, .workflow-native-modal) input[type="checkbox"] { width: 18px; height: 18px; margin: 0 var(--ts-space-4) 0 0; accent-color: var(--ts-color-primary); vertical-align: middle; }
+:where(.workflow-page, .submission-panel, .workflow-native-modal) :where(button, input, select, textarea):disabled:where(:not([class*="el-"]):not([class*="van-"])) { opacity: 1; background: var(--ts-color-disabled-bg); border-color: var(--ts-color-disabled-border); color: var(--ts-color-text-muted); cursor: not-allowed; }
+:where(.workflow-page, .submission-panel, .workflow-native-modal) :is(input, textarea)[readonly]:not([class*="el-"]):not([class*="van-"]) { background: var(--ts-color-surface-subtle); color: var(--ts-color-text); }
+:where(.workflow-page, .submission-panel, .workflow-native-modal) :is(button, input, select, textarea, summary, a):focus-visible { outline: 2px solid var(--ts-color-primary); outline-offset: 2px; }
+:where(.workflow-page, .submission-panel, .workflow-native-modal) :is(input, select, textarea)[aria-invalid="true"] { border-color: var(--ts-color-danger); }
+.workflow-page button.primary, .submission-panel button.primary { background: var(--ts-color-primary); border-color: var(--ts-color-primary); color: var(--ts-color-surface); }
+.workflow-page button.primary:disabled, .submission-panel button.primary:disabled { background: var(--ts-color-disabled-bg); border-color: var(--ts-color-disabled-border); color: var(--ts-color-text-muted); }
+.workflow-page button.danger { color: var(--ts-color-danger); border-color: var(--ts-color-danger); }
+.workflow-page a { color: var(--ts-color-primary-text); text-underline-offset: 3px; overflow-wrap: anywhere; }
+.workflow-tabs, .workflow-actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--ts-space-8); margin: var(--ts-space-16) 0; }
+.workflow-actions > * { min-width: 0; max-width: 100%; }
+.workflow-tabs { border-bottom: 1px solid var(--ts-color-border); padding-bottom: var(--ts-space-12); }
+.workflow-tabs button.active { color: var(--ts-color-primary-text); background: var(--ts-color-primary-soft); border-color: var(--ts-color-primary); font-weight: 500; }
+.workflow-tag { display: inline-block; padding: var(--ts-space-2) var(--ts-space-8); border-radius: var(--ts-radius-small); background: var(--ts-color-disabled-bg); color: var(--ts-color-text-secondary); font-size: var(--ts-type-caption); line-height: 18px; white-space: normal; }
+.workflow-tag[data-state="PENDING"] { background: var(--ts-color-primary-soft); color: var(--ts-color-primary-text); }
+.workflow-tag:is([data-state="APPROVED"], [data-state="RESOLVED"], [data-state="COMPLETE"]) { background: var(--ts-color-success-soft); color: var(--ts-color-success); }
+.workflow-tag:is([data-state="REJECTED"], [data-state="DECLINED"], [data-state="FAILED"]) { background: var(--ts-color-danger-soft); color: var(--ts-color-danger); }
+.workflow-tag:is([data-state="REQUESTED"], [data-state="OPEN"], [data-state="ESCALATED"], [data-state="PARTIAL"], [data-state="AMENDING"]) { background: var(--ts-color-warning-soft); color: var(--ts-color-warning); }
+.workflow-error, .workflow-warning, .workflow-success { padding: var(--ts-space-12) var(--ts-space-16); border-radius: var(--ts-radius-control); line-height: 1.6; overflow-wrap: anywhere; }
+.workflow-error { background: var(--ts-color-danger-soft); color: var(--ts-color-danger); }
+.workflow-warning { background: var(--ts-color-warning-soft); color: var(--ts-color-warning); }
+.workflow-success { background: var(--ts-color-success-soft); color: var(--ts-color-success); }
+.workflow-empty { margin: var(--ts-space-20) 0; padding: var(--ts-space-48) var(--ts-space-20); border: 1px dashed var(--ts-color-border); border-radius: var(--ts-radius-card); background: var(--ts-color-surface); color: var(--ts-color-text-muted); text-align: center; overflow-wrap: anywhere; }
+.workflow-page button.package-card { display: block; width: 100%; padding: var(--ts-space-20); border-color: var(--ts-color-border); border-radius: var(--ts-radius-card); text-align: left; }
+.package-card > div { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--ts-space-12); }
+.package-card h2 { margin: var(--ts-space-12) 0; }
+.workflow-overlay { position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center; padding: var(--ts-space-20); background: var(--ts-color-overlay); }
+.workflow-dialog { width: 100%; max-width: 640px; max-height: 90dvh; padding: var(--ts-space-24); overflow: auto; overscroll-behavior: contain; border-radius: var(--ts-radius-dialog); background: var(--ts-color-surface); box-shadow: var(--ts-shadow-dialog); color: var(--ts-color-text); overflow-wrap: anywhere; }
+.workflow-dialog h2 { font-size: var(--ts-type-section); line-height: 24px; color: var(--ts-color-text-strong); }
+.workflow-dialog label { display: grid; min-width: 0; gap: var(--ts-space-8); margin: var(--ts-space-16) 0; color: var(--ts-color-text-secondary); font-size: var(--ts-type-label); }
+.workflow-dialog :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) { width: 100%; }
+.workflow-dialog .workflow-actions label { display: flex; align-items: center; margin: 0; }
+.workflow-page dd { margin: var(--ts-space-8) 0 var(--ts-space-16); white-space: pre-wrap; line-height: 1.6; overflow-wrap: anywhere; }
+.workflow-page dt { color: var(--ts-color-text-secondary); font-weight: 600; }
+.preserve-lines { white-space: pre-wrap; overflow-wrap: anywhere; }
+.workflow-table-wrap { width: 100%; min-width: 0; max-width: 100%; margin-top: var(--ts-space-16); overflow: auto; overscroll-behavior-x: contain; }
+.workflow-table { width: 100%; border-collapse: collapse; font-size: var(--ts-type-body); font-variant-numeric: tabular-nums; }
+.workflow-table th, .workflow-table td { min-width: 88px; padding: var(--ts-space-12); border-bottom: 1px solid var(--ts-color-divider); text-align: left; vertical-align: top; line-height: 24px; }
+.workflow-table th { padding-block: var(--ts-space-8); background: var(--ts-color-surface-subtle); color: var(--ts-color-text-secondary); font-weight: 500; white-space: nowrap; }
+.workflow-filters { display: flex; align-items: end; flex-wrap: wrap; gap: var(--ts-space-12); }
+.workflow-filters > * { min-width: 0; max-width: 100%; }
+.workflow-filters label { display: grid; min-width: 0; max-width: 100%; gap: var(--ts-space-8); color: var(--ts-color-text-secondary); font-size: var(--ts-type-label); }
+.workflow-metrics { display: flex; flex-wrap: wrap; gap: var(--ts-space-16); }
+.workflow-metrics > div { min-width: 140px; max-width: 100%; padding: var(--ts-space-20); border: 1px solid var(--ts-color-border); border-radius: var(--ts-radius-card); background: var(--ts-color-surface); }
+.workflow-metrics strong { display: block; margin-top: var(--ts-space-8); color: var(--ts-color-text-strong); font-size: var(--ts-type-number); line-height: 36px; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.workflow-metrics span { color: var(--ts-color-text-secondary); font-size: var(--ts-type-label); }
+.workflow-page details { padding: var(--ts-space-12) 0; }
+.workflow-page summary { cursor: pointer; font-weight: 600; overflow-wrap: anywhere; }
+.workflow-page pre { padding: var(--ts-space-12); background: var(--ts-color-surface-subtle); font-family: var(--ts-font-mono); font-size: var(--ts-type-caption); white-space: pre-wrap; overflow-wrap: anywhere; }
+.workflow-readonly { padding: var(--ts-space-12); border-radius: var(--ts-radius-control); background: var(--ts-color-surface-subtle); }
+.submission-panel { margin-top: var(--ts-space-16); }
+.submission-panel .workflow-panel { padding: var(--ts-space-16); }
+.submission-panel .workflow-dialog { width: min(820px, 100%); }
+.submission-panel button { font-size: var(--ts-type-body); }
+.approval-state { color: var(--ts-color-text-secondary); font-size: var(--ts-type-caption); }
+.entry-actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--ts-space-8); }
+.submission-note { margin: var(--ts-space-12) 0; color: var(--ts-color-text-muted); font-size: var(--ts-type-label); }
+.submission-note > button { min-height: var(--ts-size-control); padding: var(--ts-space-8) var(--ts-space-12); border: 1px solid var(--ts-color-control-border); border-radius: var(--ts-radius-control); background: var(--ts-color-surface); color: var(--ts-color-primary-text); font: inherit; cursor: pointer; }
+.batch-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: var(--ts-space-12); padding: 0 var(--ts-space-20) var(--ts-space-16); }
+.batch-toolbar > span { color: var(--ts-color-text-muted); font-size: var(--ts-type-label); }
+
+/* Preserve native dialog top layer, Escape handling, and focus restoration. */
+.workflow-native-modal { width: min(850px, calc(100vw - 32px)); max-width: none; max-height: none; margin: auto; padding: 0; border: 0; background: transparent; color: inherit; }
+.workflow-native-modal::backdrop { background: var(--ts-color-overlay); }
+.workflow-native-modal .workflow-dialog { margin: auto; max-height: 90dvh; }
+.workflow-native-modal .workflow-overlay { position: static; display: block; padding: 0; background: none; }
+.workflow-native-modal .workflow-dialog form { color: var(--ts-color-text); }
+
+@media (hover: hover) {
+  :where(.workflow-page, .submission-panel, .workflow-native-modal) :where(button:not(:disabled):not([class*="el-"]):not([class*="van-"])):hover { background: var(--ts-color-surface-hover); border-color: var(--ts-color-primary); }
+  .workflow-page button.primary:not(:disabled):hover, .submission-panel button.primary:not(:disabled):hover { background: var(--ts-color-primary-hover); border-color: var(--ts-color-primary-hover); }
+  .workflow-tabs button.active:not(:disabled):hover { background: var(--ts-color-primary-soft); }
+  .workflow-page a:hover { color: var(--ts-color-primary-hover); }
+}
+.workflow-page button.primary:not(:disabled):active, .submission-panel button.primary:not(:disabled):active { background: var(--ts-color-primary-active); border-color: var(--ts-color-primary-active); }
+@media (max-width: 767px) {
+  .workflow-page h1 { font-size: var(--ts-type-subtitle); line-height: 28px; }
+  .workflow-head { align-items: start; flex-wrap: wrap; gap: var(--ts-space-12); margin-bottom: var(--ts-space-16); }
+  .workflow-head p { font-size: var(--ts-type-label); }
+  .workflow-head > button { flex-shrink: 0; }
+  .workflow-between { align-items: start; flex-wrap: wrap; }
+  .workflow-panel, .workflow-page button.package-card { padding: var(--ts-space-16); }
+  :where(.workflow-page, .submission-panel, .workflow-native-modal) :where(button, select, input:not([type="checkbox"]):not([type="radio"]), textarea):where(:not([class*="el-"]):not([class*="van-"])) { min-height: var(--ts-size-touch); }
+  :is(.workflow-page, .submission-panel, .workflow-native-modal) :where(select, input:not([type="checkbox"]):not([type="radio"]), textarea):where(:not([class*="el-"]):not([class*="van-"])) { font-size: 16px; line-height: 24px; }
+  .workflow-actions label:has(input[type="checkbox"]), .workflow-between label:has(input[type="checkbox"]) { display: flex; min-height: var(--ts-size-touch); align-items: center; gap: var(--ts-space-4); }
+  .workflow-metrics { gap: var(--ts-space-12); }
+  .workflow-metrics > div { flex: 1 1 120px; min-width: 0; padding: var(--ts-space-16); }
+  .workflow-metrics strong { font-size: var(--ts-type-title); line-height: 32px; }
+  .workflow-overlay { padding: var(--ts-space-12); }
+  .workflow-dialog { padding: var(--ts-space-20); }
+  .mobile-shell > .workflow-page { padding: var(--ts-space-20) var(--ts-space-16) var(--ts-space-40); }
+}
+@media (max-width: 374px) {
+  .mobile-shell > .workflow-page { padding-inline: var(--ts-space-12); }
+  .workflow-dialog { padding: var(--ts-space-16); }
+  .workflow-filters label { flex: 1 1 100%; }
+}
+@media (pointer: coarse) {
+  :where(.workflow-page, .submission-panel, .workflow-native-modal) :where(button, select, input:not([type="checkbox"]):not([type="radio"])):where(:not([class*="el-"]):not([class*="van-"])) { min-height: var(--ts-size-touch); }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.workflow-page, .submission-panel, .workflow-native-modal) :is(button, input, select, textarea):not([class*="el-"]):not([class*="van-"]) { transition: none; }
+}

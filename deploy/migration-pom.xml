@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <!-- Keep this parent aligned with backend/pom.xml. -->
+  <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>4.1.1</version><relativePath/></parent>
+  <groupId>com.allen</groupId><artifactId>worklog-migration</artifactId><version>0.1.0-SNAPSHOT</version><packaging>pom</packaging>
+  <build><plugins><plugin>
+    <groupId>org.flywaydb</groupId><artifactId>flyway-maven-plugin</artifactId><version>${flyway.version}</version>
+    <configuration>
+      <url>${env.DB_URL}</url><user>${env.DB_MIGRATION_USER}</user><password>${env.DB_MIGRATION_PASSWORD}</password>
+      <locations><location>filesystem:${project.basedir}/../backend/src/main/resources/db/migration</location></locations>
+      <cleanDisabled>true</cleanDisabled>
+      <validateOnMigrate>true</validateOnMigrate>
+    </configuration>
+    <dependencies>
+      <dependency><groupId>org.flywaydb</groupId><artifactId>flyway-mysql</artifactId><version>${flyway.version}</version></dependency>
+      <dependency><groupId>com.mysql</groupId><artifactId>mysql-connector-j</artifactId><version>${mysql.version}</version></dependency>
+    </dependencies>
+  </plugin></plugins></build>
+</project>

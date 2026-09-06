@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>访问演示 · 工时与投入</title>
+  <link rel="stylesheet" href="/demo-access/tokens.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; padding: 48px 20px; background: var(--ts-color-page); color: var(--ts-color-text); font-family: var(--ts-font-family); }
+    main { width: 100%; max-width: 420px; margin: 6vh auto; padding: 32px; border: 1px solid var(--ts-color-border); border-radius: var(--ts-radius-dialog); background: var(--ts-color-surface); }
+    .brand { display: flex; align-items: center; gap: 12px; color: var(--ts-color-text-strong); font-weight: 600; }
+    .mark { display: grid; place-items: center; width: 40px; height: 40px; background: var(--ts-color-primary); color: white; border-radius: var(--ts-radius-card); }
+    h1 { margin: 32px 0 12px; font-size: 24px; line-height: 1.4; color: var(--ts-color-text-strong); }
+    p { margin: 0 0 28px; color: var(--ts-color-text-secondary); font-size: 14px; line-height: 1.7; }
+    label { display: block; margin: 20px 0 8px; font-size: 14px; font-weight: 600; }
+    input, button { width: 100%; min-height: 46px; padding: 11px 12px; border: 1px solid var(--ts-color-control-border); border-radius: var(--ts-radius-control); font: inherit; font-size: 16px; }
+    input { background: var(--ts-color-surface); color: var(--ts-color-text); }
+    input:focus-visible, button:focus-visible { outline: 3px solid var(--ts-color-primary-soft); outline-offset: 2px; border-color: var(--ts-color-primary); }
+    button { margin-top: 28px; border-color: var(--ts-color-primary); background: var(--ts-color-primary); color: white; font-weight: 600; cursor: pointer; }
+    button:active { background: var(--ts-color-primary-active); }
+    .error { margin-bottom: 20px; padding: 12px; border-radius: var(--ts-radius-control); background: var(--ts-color-danger-soft); color: var(--ts-color-danger); font-size: 14px; line-height: 1.6; }
+    .error:empty { display: none; }
+    .note { margin: 24px 0 0; font-size: 12px; text-align: center; color: var(--ts-color-text-muted); }
+    @media (max-width: 480px) { body { padding: 24px 16px; } main { margin: 24px auto; padding: 24px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand"><span class="mark" aria-hidden="true">时</span><span>工时与投入</span></div>
+    <h1>访问演示</h1>
+    <p>输入分享者提供的账号与口令，<br>进入后即可选择测试身份体验。</p>
+    <div class="error" role="alert">{{error}}</div>
+    <form method="post" action="/demo-access/login">
+      <input type="hidden" name="_csrf" value="{{csrf}}">
+      <input type="hidden" name="target" value="{{target}}">
+      <label for="username">访问账号</label>
+      <input id="username" name="username" value="preview" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="100" required>
+      <label for="password">访问口令</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" maxlength="200" required>
+      <button type="submit">进入演示</button>
+    </form>
+    <p class="note">演示环境 · 仅使用测试数据</p>
+  </main>
+</body>
+</html>

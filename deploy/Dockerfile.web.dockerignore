@@ -1,0 +1,11 @@
+**
+!deploy/
+!deploy/nginx.conf
+!frontend/
+!frontend/apps/
+!frontend/apps/admin/
+!frontend/apps/admin/dist/
+!frontend/apps/admin/dist/**
+!frontend/apps/h5/
+!frontend/apps/h5/dist/
+!frontend/apps/h5/dist/**

@@ -1,0 +1,57 @@
+# Deployment reference only: corporate HTTPS ingress and managed/private MySQL
+# and Redis must already exist. Never combine with compose.local.yml.
+name: worklog
+
+x-backend-environment: &backend-environment
+  SPRING_DATASOURCE_URL: ${DB_URL:?Set MySQL JDBC URL}
+  SPRING_DATASOURCE_USERNAME: ${DB_APP_USER:?Set restricted runtime database user}
+  SPRING_DATASOURCE_PASSWORD: ${DB_APP_PASSWORD:?Inject runtime database password}
+  SPRING_DATASOURCE_HIKARI_TRANSACTION_ISOLATION: TRANSACTION_READ_COMMITTED
+  SPRING_DATA_REDIS_HOST: ${REDIS_HOST:?Set private Redis host}
+  SPRING_DATA_REDIS_PORT: ${REDIS_PORT:-6379}
+  SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:?Inject Redis password}
+  SPRING_SESSION_REDIS_NAMESPACE: worklog:production:session
+  SPRING_FLYWAY_ENABLED: "false"
+  EXPORT_DIR: /app/files
+  SERVER_SERVLET_SESSION_COOKIE_SECURE: "true"
+  SERVER_SERVLET_SESSION_COOKIE_HTTP_ONLY: "true"
+  SERVER_SERVLET_SESSION_COOKIE_SAME_SITE: lax
+
+services:
+  api:
+    image: ${BACKEND_IMAGE:?Set built backend image with immutable tag or digest}
+    environment:
+      <<: *backend-environment
+      SPRING_PROFILES_ACTIVE: prod,api
+      SERVER_PORT: 8080
+      SERVER_ADDRESS: 0.0.0.0
+    expose: ["8080"]
+    read_only: true
+    tmpfs: ["/tmp"]
+    volumes: ["private-files:/app/files"]
+    restart: unless-stopped
+  worker:
+    image: ${BACKEND_IMAGE:?Set built backend image with immutable tag or digest}
+    environment:
+      <<: *backend-environment
+      SPRING_PROFILES_ACTIVE: prod,worker
+      SPRING_MAIN_WEB_APPLICATION_TYPE: none
+    read_only: true
+    tmpfs: ["/tmp"]
+    volumes: ["private-files:/app/files"]
+    restart: unless-stopped
+  web:
+    image: ${WEB_IMAGE:?Set built web image with immutable tag or digest}
+    ports: ["127.0.0.1:8088:80"]
+    depends_on: [api]
+    read_only: true
+    tmpfs: ["/var/cache/nginx", "/var/run", "/tmp"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/healthz"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  private-files:

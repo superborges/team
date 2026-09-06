@@ -1,0 +1,84 @@
+/* 工时与项目成本 · 企业蓝 v1.0 | 项目自定义规范，非企业微信官方 Token。
+ * tokens.json 是数值来源；修改后须同步此文件及预览。变量统一使用 --ts- 前缀。 */
+:root {
+  /* color */
+  --ts-color-primary: #1664FF;
+  --ts-color-primary-hover: #1256DC;
+  --ts-color-primary-active: #0F49BC;
+  --ts-color-primary-soft: #EAF2FF;
+  --ts-color-primary-text: #1259D5;
+  --ts-color-page: #F5F7FA;
+  --ts-color-surface: #FFFFFF;
+  --ts-color-surface-subtle: #F8FAFC;
+  --ts-color-surface-hover: #F1F5F9;
+  --ts-color-text: #1F2937;
+  --ts-color-text-strong: #172B4D;
+  --ts-color-text-secondary: #526176;
+  --ts-color-text-muted: #667085;
+  --ts-color-text-disabled: #98A2B3;
+  --ts-color-border: #E5E9F0;
+  --ts-color-divider: #EDF0F5;
+  --ts-color-control-border: #8291A7;
+  --ts-color-success: #087A52;
+  --ts-color-success-soft: #E8F5EE;
+  --ts-color-warning: #9B5A00;
+  --ts-color-warning-soft: #FFF4E5;
+  --ts-color-danger: #C1323E;
+  --ts-color-danger-soft: #FFF0F0;
+  --ts-color-disabled-bg: #F2F4F7;
+  --ts-color-disabled-border: #D9DFE8;
+  --ts-color-overlay: rgba(23, 43, 77, 0.36);
+  /* space */
+  --ts-space-0: 0px;
+  --ts-space-2: 2px;
+  --ts-space-4: 4px;
+  --ts-space-8: 8px;
+  --ts-space-12: 12px;
+  --ts-space-16: 16px;
+  --ts-space-20: 20px;
+  --ts-space-24: 24px;
+  --ts-space-32: 32px;
+  --ts-space-40: 40px;
+  --ts-space-48: 48px;
+  /* radius */
+  --ts-radius-small: 4px;
+  --ts-radius-control: 6px;
+  --ts-radius-card: 8px;
+  --ts-radius-dialog: 12px;
+  --ts-radius-round: 999px;
+  /* font */
+  --ts-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --ts-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* type */
+  --ts-type-caption: 12px;
+  --ts-type-label: 13px;
+  --ts-type-body: 14px;
+  --ts-type-mobile-body: 15px;
+  --ts-type-section: 16px;
+  --ts-type-subtitle: 20px;
+  --ts-type-title: 24px;
+  --ts-type-number: 28px;
+  /* size */
+  --ts-size-header: 56px;
+  --ts-size-sidebar: 200px;
+  --ts-size-content-max: 1120px;
+  --ts-size-control: 40px;
+  --ts-size-compact: 32px;
+  --ts-size-touch: 44px;
+  --ts-size-textarea-min: 88px;
+  /* shadow */
+  --ts-shadow-none: none;
+  --ts-shadow-popover: 0 4px 16px rgba(23, 43, 77, 0.10);
+  --ts-shadow-dialog: 0 16px 48px rgba(23, 43, 77, 0.16);
+  --ts-shadow-sticky: 0 -2px 8px rgba(23, 43, 77, 0.04);
+  /* motion */
+  --ts-motion-fast: 120ms;
+  --ts-motion-normal: 180ms;
+  --ts-motion-ease: cubic-bezier(0.2, 0, 0, 1);
+  /* z */
+  --ts-z-base: 0;
+  --ts-z-sticky: 20;
+  --ts-z-dropdown: 40;
+  --ts-z-modal: 100;
+  --ts-z-toast: 120;
+}

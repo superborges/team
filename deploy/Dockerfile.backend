@@ -1,0 +1,7 @@
+FROM eclipse-temurin:21-jre@sha256:7a65df4b22d2de92d4e04056e884f3b9122d70b21e2847fd66084278bd0ce037
+WORKDIR /app
+RUN groupadd --gid 10001 worklog && useradd --uid 10001 --gid 10001 --no-create-home worklog \
+    && mkdir /app/files && chown worklog:worklog /app/files
+COPY --chown=worklog:worklog backend/target/worklog-0.1.0-SNAPSHOT.jar /app/worklog.jar
+USER 10001:10001
+ENTRYPOINT ["java", "-jar", "/app/worklog.jar"]

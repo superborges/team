@@ -1,0 +1,90 @@
+spring:
+  application:
+    name: worklog
+  task:
+    scheduling:
+      pool:
+        size: 2
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
+  datasource:
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:13306/worklog?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true}
+    username: ${DB_USER:worklog}
+    password: ${DB_PASSWORD:}
+    hikari:
+      transaction-isolation: TRANSACTION_READ_COMMITTED
+      maximum-pool-size: 10
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:16379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2s
+  session:
+    timeout: 8h
+    redis:
+      namespace: worklog:session
+server:
+  address: ${SERVER_ADDRESS:127.0.0.1}
+  port: ${SERVER_PORT:8080}
+  servlet:
+    session:
+      cookie:
+        name: WORKLOG_SESSION
+        http-only: true
+        secure: true
+        same-site: lax
+  error:
+    include-message: never
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+app:
+  local-login-enabled: false
+  business-zone: Asia/Shanghai
+  export-dir: ${EXPORT_DIR:/app/files}
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    password: ${DB_PASSWORD:worklog-local}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration,classpath:db/local
+    # Local-only fixture V1000 precedes subsequent business migrations in a reused dev database.
+    out-of-order: true
+  data:
+    redis:
+      password: ${REDIS_PASSWORD:worklog-redis-local}
+  session:
+    redis:
+      namespace: worklog:local:session
+server:
+  address: 127.0.0.1
+  servlet:
+    session:
+      cookie:
+        name: WORKLOG_LOCAL_SESSION
+        secure: false
+app:
+  local-login-enabled: true
+  export-dir: ${EXPORT_DIR:.local/exports}
+---
+spring:
+  config:
+    activate:
+      on-profile: worker
+  main:
+    web-application-type: none

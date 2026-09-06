@@ -1,0 +1,151 @@
+/* Enterprise Blue: the design package tokens mapped to the installed UI libraries.
+ * Source: docs/design/timesheet_design_system_v1/styles/tokens.css.
+ * Keep business thresholds in the API; this file contains presentation only. */
+@import './tokens.css';
+
+:root {
+  color-scheme: light;
+  font-family: var(--ts-font-family);
+  color: var(--ts-color-text);
+  background: var(--ts-color-page);
+  font-synthesis: none;
+  --el-font-family: var(--ts-font-family);
+  --el-color-primary: var(--ts-color-primary);
+  --el-color-primary-dark-2: var(--ts-color-primary-active);
+  --el-color-primary-light-3: var(--ts-color-primary-hover);
+  --el-color-primary-light-5: var(--ts-color-control-border);
+  --el-color-primary-light-7: var(--ts-color-primary-soft);
+  --el-color-primary-light-8: var(--ts-color-primary-soft);
+  --el-color-primary-light-9: var(--ts-color-primary-soft);
+  --el-color-success: var(--ts-color-success);
+  --el-color-success-dark-2: var(--ts-color-success);
+  --el-color-success-light-3: var(--ts-color-success);
+  --el-color-success-light-5: var(--ts-color-control-border);
+  --el-color-success-light-7: var(--ts-color-success-soft);
+  --el-color-success-light-8: var(--ts-color-success-soft);
+  --el-color-success-light-9: var(--ts-color-success-soft);
+  --el-color-warning: var(--ts-color-warning);
+  --el-color-warning-dark-2: var(--ts-color-warning);
+  --el-color-warning-light-3: var(--ts-color-warning);
+  --el-color-warning-light-5: var(--ts-color-control-border);
+  --el-color-warning-light-7: var(--ts-color-warning-soft);
+  --el-color-warning-light-8: var(--ts-color-warning-soft);
+  --el-color-warning-light-9: var(--ts-color-warning-soft);
+  --el-color-danger: var(--ts-color-danger);
+  --el-color-danger-dark-2: var(--ts-color-danger);
+  --el-color-danger-light-3: var(--ts-color-danger);
+  --el-color-danger-light-5: var(--ts-color-control-border);
+  --el-color-danger-light-7: var(--ts-color-danger-soft);
+  --el-color-danger-light-8: var(--ts-color-danger-soft);
+  --el-color-danger-light-9: var(--ts-color-danger-soft);
+  --el-color-error: var(--ts-color-danger);
+  --el-color-error-light-8: var(--ts-color-danger-soft);
+  --el-color-error-light-9: var(--ts-color-danger-soft);
+  --el-color-info: var(--ts-color-text-secondary);
+  --el-color-info-dark-2: var(--ts-color-text);
+  --el-color-info-light-3: var(--ts-color-text-secondary);
+  --el-color-info-light-5: var(--ts-color-control-border);
+  --el-color-info-light-7: var(--ts-color-disabled-bg);
+  --el-color-info-light-8: var(--ts-color-disabled-bg);
+  --el-color-info-light-9: var(--ts-color-disabled-bg);
+  --el-bg-color: var(--ts-color-surface);
+  --el-bg-color-page: var(--ts-color-page);
+  --el-bg-color-overlay: var(--ts-color-surface);
+  --el-text-color-primary: var(--ts-color-text-strong);
+  --el-text-color-regular: var(--ts-color-text);
+  --el-text-color-secondary: var(--ts-color-text-secondary);
+  --el-text-color-placeholder: var(--ts-color-text-muted);
+  --el-text-color-disabled: var(--ts-color-text-secondary);
+  --el-border-color: var(--ts-color-control-border);
+  --el-border-color-light: var(--ts-color-border);
+  --el-border-color-lighter: var(--ts-color-border);
+  --el-border-color-extra-light: var(--ts-color-divider);
+  --el-border-color-dark: var(--ts-color-text-secondary);
+  --el-border-radius-base: var(--ts-radius-control);
+  --el-border-radius-small: var(--ts-radius-small);
+  --el-fill-color: var(--ts-color-surface-subtle);
+  --el-fill-color-light: var(--ts-color-surface-subtle);
+  --el-fill-color-lighter: var(--ts-color-surface-subtle);
+  --el-fill-color-extra-light: var(--ts-color-surface-subtle);
+  --el-fill-color-blank: var(--ts-color-surface);
+  --el-disabled-bg-color: var(--ts-color-disabled-bg);
+  --el-disabled-text-color: var(--ts-color-text-secondary);
+  --el-disabled-border-color: var(--ts-color-disabled-border);
+  --el-component-size: var(--ts-size-control);
+  --el-component-size-small: var(--ts-size-compact);
+  --el-component-size-large: var(--ts-size-touch);
+  --el-mask-color: var(--ts-color-overlay);
+  --el-overlay-color: var(--ts-color-overlay);
+  --el-box-shadow: var(--ts-shadow-dialog);
+  --el-box-shadow-light: var(--ts-shadow-popover);
+  --el-box-shadow-lighter: var(--ts-shadow-popover);
+  --el-transition-duration: var(--ts-motion-normal);
+  --el-transition-duration-fast: var(--ts-motion-fast);
+
+  --van-font-family: var(--ts-font-family);
+  --van-primary-color: var(--ts-color-primary);
+  --van-success-color: var(--ts-color-success);
+  --van-warning-color: var(--ts-color-warning);
+  --van-danger-color: var(--ts-color-danger);
+  --van-text-color: var(--ts-color-text);
+  --van-text-color-2: var(--ts-color-text-secondary);
+  --van-text-color-3: var(--ts-color-text-muted);
+  --van-background: var(--ts-color-page);
+  --van-background-2: var(--ts-color-surface);
+  --van-background-3: var(--ts-color-surface-subtle);
+  --van-border-color: var(--ts-color-border);
+  --van-active-color: var(--ts-color-surface-hover);
+  --van-radius-sm: var(--ts-radius-small);
+  --van-radius-md: var(--ts-radius-control);
+  --van-radius-lg: var(--ts-radius-card);
+  --van-font-size-md: var(--ts-type-body);
+  --van-font-size-lg: var(--ts-type-section);
+  --van-duration-base: var(--ts-motion-normal);
+  --van-duration-fast: var(--ts-motion-fast);
+  --van-button-radius: var(--ts-radius-control);
+  --van-button-default-height: var(--ts-size-touch);
+  --van-button-small-height: var(--ts-size-touch);
+  --van-button-default-font-size: var(--ts-type-mobile-body);
+  --van-button-normal-font-size: var(--ts-type-mobile-body);
+  --van-button-normal-padding: 0 var(--ts-space-16);
+  --van-button-default-border-color: var(--ts-color-control-border);
+  --van-button-disabled-opacity: 1;
+  --van-checkbox-border-color: var(--ts-color-control-border);
+  --van-checkbox-disabled-label-color: var(--ts-color-text-secondary);
+  --van-checkbox-disabled-background: var(--ts-color-disabled-bg);
+  --van-notice-bar-text-color: var(--ts-color-primary-text);
+  --van-notice-bar-background: var(--ts-color-primary-soft);
+  --van-notice-bar-font-size: var(--ts-type-caption);
+  --van-field-label-color: var(--ts-color-text-secondary);
+  --van-field-placeholder-text-color: var(--ts-color-text-muted);
+  --van-field-input-disabled-text-color: var(--ts-color-text-secondary);
+  --van-field-disabled-text-color: var(--ts-color-text-secondary);
+  --van-field-word-limit-color: var(--ts-color-text-muted);
+  --van-field-text-area-min-height: var(--ts-size-textarea-min);
+  --van-overlay-background: var(--ts-color-overlay);
+  --van-dialog-radius: var(--ts-radius-dialog);
+}
+
+/* Shared focus treatment covers native forms and both existing component libraries. */
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--ts-color-primary);
+  outline-offset: 2px;
+}
+:where(input, select, textarea) { accent-color: var(--ts-color-primary); }
+:where(input, textarea)::placeholder { color: var(--ts-color-text-muted); }
+.van-button--disabled {
+  color: var(--ts-color-text-secondary);
+  background: var(--ts-color-disabled-bg);
+  border-color: var(--ts-color-disabled-border);
+}
+@media (max-width: 767px), (pointer: coarse) {
+  :root { --el-component-size: var(--ts-size-touch); }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --el-transition-duration: 0s;
+    --el-transition-duration-fast: 0s;
+    --van-duration-base: 0s;
+    --van-duration-fast: 0s;
+  }
+}

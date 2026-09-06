@@ -1,0 +1,2 @@
+ALTER TABLE role_grant ADD COLUMN revoked_at DATETIME(6) NULL;
+ALTER TABLE reporting_enrollment ADD COLUMN voided BOOLEAN NOT NULL DEFAULT FALSE;

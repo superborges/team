@@ -1,0 +1,16 @@
+.DS_Store
+.codex/
+.runtime/
+.local/
+node_modules/
+dist/
+dist-demo/
+target/
+.env
+.env.*
+!.env.example
+*.log
+test-results/
+playwright-report/
+__pycache__/
+*.py[cod]

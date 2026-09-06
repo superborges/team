@@ -1,0 +1,127 @@
+{
+  "viewports": [
+    {
+      "viewport": 320,
+      "view": "page",
+      "width": 320,
+      "scroll": 320,
+      "body": 320,
+      "horizontalOverflow": false,
+      "visibleOverflow": []
+    },
+    {
+      "viewport": 320,
+      "view": "guide",
+      "width": 320,
+      "scroll": 320,
+      "body": 320,
+      "horizontalOverflow": false,
+      "visibleOverflow": []
+    },
+    {
+      "viewport": 375,
+      "view": "page",
+      "width": 375,
+      "scroll": 375,
+      "body": 375,
+      "horizontalOverflow": false,
+      "visibleOverflow": []
+    },
+    {
+      "viewport": 375,
+      "view": "guide",
+      "width": 375,
+      "scroll": 375,
+      "body": 375,
+      "horizontalOverflow": false,
+      "visibleOverflow": []
+    },
+    {
+      "viewport": 390,
+      "view": "page",
+      "width": 390,
+      "scroll": 390,
+      "body": 390,
+      "horizontalOverflow": false,
+      "visibleOverflow": []
+    },
+    {
+      "viewport": 390,
+      "view": "guide",
+      "width": 390,
+      "scroll": 390,
+      "body": 390,
+      "horizontalOverflow": false,
+      "visibleOverflow": []
+    },
+    {
+      "viewport": 768,
+      "view": "page",
+      "width": 768,
+      "scroll": 768,
+      "body": 768,
+      "horizontalOverflow": false,
+      "visibleOverflow": []
+    },
+    {
+      "viewport": 768,
+      "view": "guide",
+      "width": 768,
+      "scroll": 768,
+      "body": 768,
+      "horizontalOverflow": false,
+      "visibleOverflow": []
+    },
+    {
+      "viewport": 1024,
+      "view": "page",
+      "width": 1024,
+      "scroll": 1024,
+      "body": 1024,
+      "horizontalOverflow": false,
+      "visibleOverflow": []
+    },
+    {
+      "viewport": 1024,
+      "view": "guide",
+      "width": 1024,
+      "scroll": 1024,
+      "body": 1024,
+      "horizontalOverflow": false,
+      "visibleOverflow": []
+    },
+    {
+      "viewport": 1440,
+      "view": "page",
+      "width": 1440,
+      "scroll": 1440,
+      "body": 1440,
+      "horizontalOverflow": false,
+      "visibleOverflow": []
+    },
+    {
+      "viewport": 1440,
+      "view": "guide",
+      "width": 1440,
+      "scroll": 1440,
+      "body": 1440,
+      "horizontalOverflow": false,
+      "visibleOverflow": []
+    }
+  ],
+  "interactions": [
+    "初始工时验算 4+1+3=8，实际工作 5h：通过",
+    "修改工时与汇总、尚差联动：通过",
+    "工时未完整时仍可打开独立现场日送审演示：通过",
+    "工时未说明完整的演示提示：通过",
+    "周送审预览清楚标记仅载入单日模拟数据、未产生真实提交：通过",
+    "新增、空值不伪装为零、编辑和确认移除草稿：通过",
+    "模拟保存反馈、loading 结束、无持久化说明：通过",
+    "现场日展开与收起：通过",
+    "页面没有重复 DOM id：通过",
+    "键盘 Tab 焦点轮廓为 2px 实线：通过"
+  ],
+  "console_errors": [],
+  "page_errors": [],
+  "external_requests": []
+}

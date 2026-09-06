@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="color-scheme" content="light"><title>工时与项目成本 · 企业蓝 Design System v1.0</title><style>/* 工时与项目成本 · 企业蓝 v1.0 | 项目自定义规范，非企业微信官方 Token。
+ * tokens.json 是数值来源；修改后须同步此文件及预览。变量统一使用 --ts- 前缀。 */
+:root {
+  /* color */
+  --ts-color-primary: #1664FF;
+  --ts-color-primary-hover: #1256DC;
+  --ts-color-primary-active: #0F49BC;
+  --ts-color-primary-soft: #EAF2FF;
+  --ts-color-primary-text: #1259D5;
+  --ts-color-page: #F5F7FA;
+  --ts-color-surface: #FFFFFF;
+  --ts-color-surface-subtle: #F8FAFC;
+  --ts-color-surface-hover: #F1F5F9;
+  --ts-color-text: #1F2937;
+  --ts-color-text-strong: #172B4D;
+  --ts-color-text-secondary: #526176;
+  --ts-color-text-muted: #667085;
+  --ts-color-text-disabled: #98A2B3;
+  --ts-color-border: #E5E9F0;
+  --ts-color-divider: #EDF0F5;
+  --ts-color-control-border: #8291A7;
+  --ts-color-success: #087A52;
+  --ts-color-success-soft: #E8F5EE;
+  --ts-color-warning: #9B5A00;
+  --ts-color-warning-soft: #FFF4E5;
+  --ts-color-danger: #C1323E;
+  --ts-color-danger-soft: #FFF0F0;
+  --ts-color-disabled-bg: #F2F4F7;
+  --ts-color-disabled-border: #D9DFE8;
+  --ts-color-overlay: rgba(23, 43, 77, 0.36);
+  /* space */
+  --ts-space-0: 0px;
+  --ts-space-2: 2px;
+  --ts-space-4: 4px;
+  --ts-space-8: 8px;
+  --ts-space-12: 12px;
+  --ts-space-16: 16px;
+  --ts-space-20: 20px;
+  --ts-space-24: 24px;
+  --ts-space-32: 32px;
+  --ts-space-40: 40px;
+  --ts-space-48: 48px;
+  /* radius */
+  --ts-radius-small: 4px;
+  --ts-radius-control: 6px;
+  --ts-radius-card: 8px;
+  --ts-radius-dialog: 12px;
+  --ts-radius-round: 999px;
+  /* font */
+  --ts-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --ts-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* type */
+  --ts-type-caption: 12px;
+  --ts-type-label: 13px;
+  --ts-type-body: 14px;
+  --ts-type-mobile-body: 15px;
+  --ts-type-section: 16px;
+  --ts-type-subtitle: 20px;
+  --ts-type-title: 24px;
+  --ts-type-number: 28px;
+  /* size */
+  --ts-size-header: 56px;
+  --ts-size-sidebar: 200px;
+  --ts-size-content-max: 1120px;
+  --ts-size-control: 40px;
+  --ts-size-compact: 32px;
+  --ts-size-touch: 44px;
+  --ts-size-textarea-min: 88px;
+  /* shadow */
+  --ts-shadow-none: none;
+  --ts-shadow-popover: 0 4px 16px rgba(23, 43, 77, 0.10);
+  --ts-shadow-dialog: 0 16px 48px rgba(23, 43, 77, 0.16);
+  --ts-shadow-sticky: 0 -2px 8px rgba(23, 43, 77, 0.04);
+  /* motion */
+  --ts-motion-fast: 120ms;
+  --ts-motion-normal: 180ms;
+  --ts-motion-ease: cubic-bezier(0.2, 0, 0, 1);
+  /* z */
+  --ts-z-base: 0;
+  --ts-z-sticky: 20;
+  --ts-z-dropdown: 40;
+  --ts-z-modal: 100;
+  --ts-z-toast: 120;
+}
+
+/* 工时与项目成本 · 企业蓝 v1.0。参考样式，优先映射现有组件库主题。
+   作用域 .ts-app，不重置生产页面全局元素。 */
+.ts-app, .ts-app *, .ts-app *::before, .ts-app *::after { box-sizing: border-box; }
+.ts-app { color: var(--ts-color-text); font-family: var(--ts-font-family); font-size: var(--ts-type-body); line-height: 1.57143; background: var(--ts-color-page); -webkit-text-size-adjust: 100%; }
+.ts-app button, .ts-app input, .ts-app select, .ts-app textarea { font: inherit; }
+.ts-app button { cursor: pointer; }
+.ts-app button:disabled { cursor: not-allowed; }
+.ts-app :where(button,a,input,select,textarea,summary):focus-visible { outline: 2px solid var(--ts-color-primary); outline-offset: 2px; }
+.ts-app h1, .ts-app h2, .ts-app h3, .ts-app p { margin: 0; }
+.ts-app .ts-title { font-size: var(--ts-type-title); line-height: 32px; font-weight: 600; color: var(--ts-color-text-strong); }
+.ts-app .ts-heading { font-size: var(--ts-type-section); line-height: 24px; font-weight: 600; color: var(--ts-color-text-strong); }
+.ts-app .ts-muted { color: var(--ts-color-text-muted); }
+.ts-app .ts-caption { font-size: var(--ts-type-caption); line-height: 18px; }
+.ts-app .ts-number { font-variant-numeric: tabular-nums; }
+.ts-app .ts-icon { width: 20px; height: 20px; flex: 0 0 auto; vertical-align: middle; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.ts-app .ts-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.ts-app .ts-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: var(--ts-size-control); padding: 8px 16px; border: 1px solid var(--ts-color-control-border); border-radius: var(--ts-radius-control); background: var(--ts-color-surface); color: var(--ts-color-text); font-weight: 500; line-height: 22px; text-decoration: none; white-space: nowrap; transition: background-color var(--ts-motion-fast) var(--ts-motion-ease), border-color var(--ts-motion-fast) var(--ts-motion-ease); }
+.ts-app .ts-btn:hover { background: var(--ts-color-surface-hover); }
+.ts-app .ts-btn:active { background: var(--ts-color-disabled-bg); }
+.ts-app .ts-btn--primary { background: var(--ts-color-primary); border-color: var(--ts-color-primary); color: #fff; }
+.ts-app .ts-btn--primary:hover { background: var(--ts-color-primary-hover); border-color: var(--ts-color-primary-hover); }
+.ts-app .ts-btn--primary:active { background: var(--ts-color-primary-active); border-color: var(--ts-color-primary-active); }
+.ts-app .ts-btn--text { color: var(--ts-color-primary-text); border-color: transparent; background: transparent; padding-inline: 8px; }
+.ts-app .ts-btn--text:hover { background: var(--ts-color-primary-soft); }
+.ts-app .ts-btn--danger { color: var(--ts-color-danger); border-color: transparent; background: transparent; padding-inline: 8px; }
+.ts-app .ts-btn--danger:hover { background: var(--ts-color-danger-soft); }
+.ts-app .ts-btn--icon { width: 40px; padding: 8px; flex: 0 0 auto; }
+.ts-app .ts-btn--block { width: 100%; }
+.ts-app .ts-btn--add { color: var(--ts-color-primary-text); border-style: dashed; background: var(--ts-color-surface); }
+.ts-app .ts-btn:disabled { color: var(--ts-color-text-disabled); background: var(--ts-color-disabled-bg); border-color: var(--ts-color-disabled-border); }
+.ts-app .ts-btn[aria-busy="true"] { cursor: wait; }
+.ts-app .ts-spinner { width: 16px; height: 16px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: ts-spin .9s linear infinite; }
+@keyframes ts-spin { to { transform: rotate(360deg); } }
+.ts-app .ts-card { border: 1px solid var(--ts-color-border); border-radius: var(--ts-radius-card); background: var(--ts-color-surface); padding: 20px; min-width: 0; }
+.ts-app .ts-card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
+.ts-app .ts-card-head > :first-child { min-width: 0; }
+.ts-app .ts-stack { display: flex; flex-direction: column; gap: 16px; }
+.ts-app .ts-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ts-app .ts-tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: var(--ts-radius-small); font-size: 12px; line-height: 18px; font-weight: 500; color: var(--ts-color-text-secondary); background: var(--ts-color-disabled-bg); white-space: nowrap; }
+.ts-app .ts-tag .ts-icon { width: 14px; height: 14px; }
+.ts-app .ts-tag--info { color: var(--ts-color-primary-text); background: var(--ts-color-primary-soft); }
+.ts-app .ts-tag--success { color: var(--ts-color-success); background: var(--ts-color-success-soft); }
+.ts-app .ts-tag--warning { color: var(--ts-color-warning); background: var(--ts-color-warning-soft); }
+.ts-app .ts-tag--danger { color: var(--ts-color-danger); background: var(--ts-color-danger-soft); }
+.ts-app .ts-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.ts-app .ts-label { color: var(--ts-color-text-secondary); font-size: var(--ts-type-label); line-height: 20px; }
+.ts-app .ts-control { width: 100%; min-width: 0; min-height: var(--ts-size-control); padding: 8px 12px; border: 1px solid var(--ts-color-control-border); border-radius: var(--ts-radius-control); color: var(--ts-color-text); background: var(--ts-color-surface); line-height: 22px; transition: border-color var(--ts-motion-fast) var(--ts-motion-ease); }
+.ts-app select.ts-control { padding-right: 28px; }
+.ts-app textarea.ts-control { min-height: var(--ts-size-textarea-min); resize: vertical; display: block; }
+.ts-app .ts-control:hover { border-color: var(--ts-color-text-secondary); }
+.ts-app .ts-control:focus { border-color: var(--ts-color-primary); }
+.ts-app .ts-control::placeholder { color: var(--ts-color-text-muted); opacity: 1; }
+.ts-app .ts-control[readonly] { background: var(--ts-color-surface-subtle); }
+.ts-app .ts-control:disabled { background: var(--ts-color-disabled-bg); border-color: var(--ts-color-disabled-border); color: var(--ts-color-text-disabled); }
+.ts-app .ts-control[aria-invalid="true"] { border-color: var(--ts-color-danger); }
+.ts-app .ts-field-foot { display: flex; align-items: start; justify-content: space-between; gap: 12px; font-size: 12px; line-height: 18px; color: var(--ts-color-text-muted); }
+.ts-app .ts-error { color: var(--ts-color-danger); }
+.ts-app .ts-field-count { margin-left: auto; white-space: nowrap; }
+.ts-app .ts-fields-2 { display: grid; grid-template-columns: minmax(0,2fr) minmax(88px,1fr); gap: 16px; }
+.ts-app .ts-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; }
+.ts-app .ts-check input { appearance: none; position: relative; flex: 0 0 auto; width: 18px; height: 18px; margin: 0; border: 1px solid var(--ts-color-control-border); border-radius: 4px; background: white; }
+.ts-app .ts-check input:checked { background: var(--ts-color-primary); border-color: var(--ts-color-primary); }
+.ts-app .ts-check input:checked::after { content: ''; display: block; width: 8px; height: 4px; border-bottom: 2px solid white; border-left: 2px solid white; transform: rotate(-45deg); position: absolute; top: 4px; left: 4px; }
+.ts-app .ts-alert { display: flex; gap: 8px; align-items: flex-start; padding: 12px 16px; border: 1px solid var(--ts-color-border); background: var(--ts-color-surface-subtle); border-radius: 6px; color: var(--ts-color-text-secondary); font-size: 13px; line-height: 20px; }
+.ts-app .ts-alert--info { background: var(--ts-color-primary-soft); color: var(--ts-color-primary-text); border-color: transparent; }
+.ts-app .ts-alert--warning { background: var(--ts-color-warning-soft); color: var(--ts-color-warning); border-color: transparent; }
+.ts-app .ts-alert--danger { background: var(--ts-color-danger-soft); color: var(--ts-color-danger); border-color: transparent; }
+.ts-app .ts-divider { height: 1px; background: var(--ts-color-divider); border: 0; margin: 16px 0; }
+.ts-app .ts-table-wrap { overflow-x: auto; border: 1px solid var(--ts-color-border); border-radius: 8px; }
+.ts-app .ts-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+.ts-app .ts-table th { color: var(--ts-color-text-secondary); background: var(--ts-color-surface-subtle); height: 40px; font-weight: 500; }
+.ts-app .ts-table th, .ts-app .ts-table td { padding: 12px 16px; border-bottom: 1px solid var(--ts-color-divider); }
+.ts-app .ts-table tr:last-child td { border-bottom: 0; }
+.ts-app .ts-table .ts-numeric { text-align: right; font-variant-numeric: tabular-nums; }
+.ts-app .ts-empty { padding: 32px 16px; text-align: center; color: var(--ts-color-text-muted); }
+.ts-app .ts-empty .ts-icon { width: 32px; height: 32px; margin-bottom: 12px; }
+.ts-app .ts-skeleton { border-radius: 4px; background: var(--ts-color-divider); min-height: 16px; }
+.ts-app .ts-dialog { padding: 0; width: min(480px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); border: 1px solid var(--ts-color-border); border-radius: 12px; box-shadow: var(--ts-shadow-dialog); color: var(--ts-color-text); background: white; }
+.ts-app .ts-dialog::backdrop { background: var(--ts-color-overlay); }
+.ts-app .ts-dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--ts-color-divider); }
+.ts-app .ts-dialog-body { padding: 20px; overflow-wrap: anywhere; }
+.ts-app .ts-dialog-foot { padding: 16px 20px; border-top: 1px solid var(--ts-color-divider); display: flex; justify-content: flex-end; gap: 8px; }
+.ts-app .ts-toast { position: fixed; z-index: var(--ts-z-toast); bottom: calc(104px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px); padding: 12px 16px; background: var(--ts-color-text-strong); color: white; border-radius: 6px; box-shadow: var(--ts-shadow-popover); }
+@media (max-width: 767px) {
+ .ts-app { font-size: var(--ts-type-mobile-body); }
+ .ts-app .ts-title { font-size: 20px; line-height: 28px; }
+ .ts-app .ts-btn { min-height: 44px; }
+ .ts-app .ts-btn--icon { width: 44px; }
+ .ts-app .ts-control { min-height: 44px; font-size: 16px; line-height: 24px; }
+ .ts-app .ts-card { padding: 16px; }
+ .ts-app .ts-card-head { flex-wrap: wrap; }
+ .ts-app .ts-fields-2 { gap: 12px; }
+}
+@media (pointer: coarse) { .ts-app .ts-btn, .ts-app .ts-control { min-height: 44px; } .ts-app .ts-btn--icon { width: 44px; } }
+@media (prefers-reduced-motion: reduce) { .ts-app *, .ts-app *::before, .ts-app *::after { animation-duration: .01ms; animation-iteration-count: 1; transition-duration: .01ms; scroll-behavior: auto; } }
+
+
+body { margin: 0; }
+[hidden] { display: none ; }
+.ts-app .demo-header { height: 56px; background: white; border-bottom: 1px solid var(--ts-color-border); display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 0 24px; position: sticky; top: 0; z-index: 20; }
+.ts-app .demo-brand { display: inline-flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; color: var(--ts-color-text-strong); min-width: 0; }
+.ts-app .demo-brand>.ts-icon { color: var(--ts-color-primary); width: 24px; height: 24px; }
+.ts-app .demo-header-right { display: flex; align-items: center; gap: 20px; }
+.ts-app .demo-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--ts-color-primary-soft); color: var(--ts-color-primary-text); display: grid; place-items: center; }
+.ts-app .demo-user { display: flex; align-items: center; gap: 10px; }
+.ts-app .demo-user-text { line-height: 18px; }
+.ts-app .demo-sidebar { position: fixed; top: 56px; left: 0; bottom: 0; width: 200px; padding: 24px 12px; background: white; border-right: 1px solid var(--ts-color-border); display: flex; flex-direction: column; z-index: 10; }
+.ts-app .demo-nav-caption { font-size: 12px; color: var(--ts-color-text-muted); padding: 0 12px; margin: 0 0 12px; }
+.ts-app .demo-nav-item { display: flex; gap: 12px; align-items: center; height: 44px; margin-bottom: 4px; padding: 0 12px; color: var(--ts-color-text-secondary); border: 0; border-radius: 6px; background: transparent; font-size: 14px; text-align: left; position: relative; }
+.ts-app .demo-nav-item:hover { background: var(--ts-color-surface-hover); }
+.ts-app .demo-nav-item[aria-current="page"] { background: var(--ts-color-primary-soft); color: var(--ts-color-primary-text); font-weight: 500; }
+.ts-app .demo-nav-item[aria-current="page"]::before { content: ''; position: absolute; left: -12px; top: 12px; bottom: 12px; width: 3px; border-radius: 2px; background: var(--ts-color-primary); }
+.ts-app .demo-nav-foot { margin-top: auto; }
+.ts-app .demo-nav-foot p { padding: 12px; }
+.ts-app .demo-mobile-nav { display: none; }
+.ts-app .demo-main { margin-left: 200px; padding: 28px 24px calc(112px + env(safe-area-inset-bottom)); min-height: calc(100dvh - 56px); }
+.ts-app .demo-container { max-width: 1120px; margin: 0 auto; }
+.ts-app .demo-page-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; }
+.ts-app .demo-page-head p { margin-top: 4px; }
+.ts-app .demo-section { margin-bottom: 20px; }
+.ts-app .demo-week { padding: 0; overflow: hidden; }
+.ts-app .demo-week-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid var(--ts-color-divider); gap: 8px; }
+.ts-app .demo-week-range { font-size: 16px; font-weight: 600; color: var(--ts-color-text-strong); }
+.ts-app .demo-week-grid { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 8px; padding: 12px 16px; }
+.ts-app .demo-day { border: 1px solid transparent; border-radius: 6px; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: transparent; color: var(--ts-color-text-secondary); min-height: 82px; padding: 4px 0; }
+.ts-app .demo-day:hover { background: var(--ts-color-surface-hover); }
+.ts-app .demo-day strong { font-size: 20px; line-height: 28px; color: var(--ts-color-text-strong); font-weight: 600; }
+.ts-app .demo-day small { font-size: 12px; line-height: 18px; }
+.ts-app .demo-day[aria-pressed="true"] { background: var(--ts-color-primary); color: white; }
+.ts-app .demo-day[aria-pressed="true"] strong { color: white; }
+.ts-app .demo-day-weekend { background: var(--ts-color-surface-subtle); }
+.ts-app .demo-summary-head { display:flex;justify-content:space-between;align-items:center;gap:12px; flex-wrap:wrap; }
+.ts-app .demo-summary-head h2 { font-size: 18px; line-height: 28px; }
+.ts-app .demo-summary-totals { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin: 20px 0 12px; }
+.ts-app .demo-total { padding-right: 20px; }
+.ts-app .demo-total+.demo-total { border-left:1px solid var(--ts-color-border);padding-left:24px; }
+.ts-app .demo-total span { display:block;color:var(--ts-color-text-muted);font-size:13px; }
+.ts-app .demo-total strong { font-size:28px;font-weight:600;line-height:38px; color:var(--ts-color-text-strong); }
+.ts-app .demo-total em { font-size:13px; font-style:normal; color:var(--ts-color-text-muted); margin-left:4px; }
+.ts-app .demo-summary-progress { height:4px; background:var(--ts-color-divider); border-radius:4px; overflow:hidden; margin-bottom:16px; }
+.ts-app .demo-summary-progress > div { background:var(--ts-color-primary); width:100%;height:100%; }
+.ts-app .demo-metrics { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px; }
+.ts-app .demo-metric { border:1px solid var(--ts-color-border);border-radius:6px;padding:12px 16px;background:var(--ts-color-surface-subtle); }
+.ts-app .demo-metric span { font-size:13px;color:var(--ts-color-text-muted);display:block; }
+.ts-app .demo-metric strong { display:inline-block;font-size:22px;font-weight:600;line-height:32px;color:var(--ts-color-text-strong);margin-right:4px; }
+.ts-app .demo-metric em { font-style:normal;color:var(--ts-color-text-muted);font-size:12px; }
+.ts-app .demo-summary-note { display:flex;justify-content:space-between;gap:12px;margin-top:12px;flex-wrap:wrap; }
+.ts-app .demo-onsite-title { display:flex;align-items:center;gap:8px; }
+.ts-app .demo-onsite-title .ts-icon { color:var(--ts-color-primary-text); }
+.ts-app .demo-onsite-grid { display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px;margin-top:16px; }
+.ts-app .demo-onsite-bottom { display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;flex-wrap:wrap; }
+.ts-app .demo-entry { background:white;border:1px solid var(--ts-color-border);border-radius:8px;padding:16px; }
+.ts-app .demo-entry+.demo-entry { margin-top:12px; }
+.ts-app .demo-entry-head { display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px; }
+.ts-app .demo-entry-index { width:24px;height:24px;display:grid;place-items:center;background:var(--ts-color-surface-subtle);color:var(--ts-color-text-secondary);border-radius:4px;font-size:13px;font-weight:500; }
+.ts-app .demo-entry-fields { display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,.8fr) 104px;gap:12px; }
+.ts-app .demo-entry-content { margin-top:12px; }
+.ts-app .demo-entry-content textarea { min-height:88px; }
+.ts-app .demo-add { margin-top:16px; }
+.ts-app .demo-entry-head .ts-btn { min-height:32px;font-size:13px;padding-top:4px;padding-bottom:4px; }
+.ts-app .demo-record-tip { margin-top:12px;font-size:12px;color:var(--ts-color-text-muted);line-height:18px; }
+.ts-app .demo-footer { position:fixed;bottom:0;right:0;left:200px;padding:16px 24px calc(16px + env(safe-area-inset-bottom));background:white;border-top:1px solid var(--ts-color-border);z-index:20;box-shadow:var(--ts-shadow-sticky); }
+.ts-app .demo-footer-inner { max-width:1120px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px; }
+.ts-app .demo-footer-actions { display:flex;gap:8px; }
+.ts-app .demo-footer-primary { min-width:180px; }
+.ts-app .demo-guide-note { margin-bottom:20px; }
+.ts-app .guide-kicker { color:var(--ts-color-primary-text);font-family:var(--ts-font-mono);font-size:12px;letter-spacing:1px;margin-bottom:8px; }
+.ts-app .guide-section { margin-top:32px; }
+.ts-app .guide-section-title { display:flex;align-items:baseline;gap:12px;margin-bottom:16px; }
+.ts-app .guide-index { color:var(--ts-color-primary-text);font-size:12px;font-family:var(--ts-font-mono); }
+.ts-app .guide-colors { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px; }
+.ts-app .guide-swatch { border:1px solid var(--ts-color-border);border-radius:8px;overflow:hidden;background:white;min-width:0; }
+.ts-app .guide-swatch-color { height:64px; }
+.ts-app .guide-swatch-label { padding:12px; }
+.ts-app .guide-swatch-label strong { font-size:13px;font-weight:500;display:block; }
+.ts-app .guide-swatch-label code { font-size:12px;color:var(--ts-color-text-muted); }
+.ts-app .guide-grid2 { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px; }
+.ts-app .guide-grid2 .ts-card { height:100%; }
+.ts-app .guide-section h3 { margin-bottom:16px; }
+.ts-app .guide-type-row { display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:16px 0;border-bottom:1px solid var(--ts-color-divider); }
+.ts-app .guide-type-row:last-child { border:0; }
+.ts-app .guide-type-row small { color:var(--ts-color-text-muted);font-family:var(--ts-font-mono);font-size:12px;white-space:nowrap; }
+.ts-app .guide-rule { padding:16px 0;border-bottom:1px solid var(--ts-color-divider); }
+.ts-app .guide-rule:last-child { border-bottom:0; }
+.ts-app .guide-rule strong { font-size:14px;color:var(--ts-color-text-strong);font-weight:600; }
+.ts-app .guide-rule p { color:var(--ts-color-text-muted);font-size:13px;margin-top:4px; }
+.ts-app .demo-version { padding-top:24px;margin-top:24px;border-top:1px solid var(--ts-color-border);color:var(--ts-color-text-muted);font-size:12px; }
+@media (max-width:1023px) {
+ .ts-app .demo-sidebar { display:none; }
+ .ts-app .demo-main { margin-left:0; }
+ .ts-app .demo-footer { left:0; }
+ .ts-app .demo-mobile-nav { display:flex;background:white;border-bottom:1px solid var(--ts-color-border);padding:0 16px; }
+ .ts-app .demo-mobile-nav button { flex:1;min-height:44px;background:transparent;border:0;border-bottom:2px solid transparent;color:var(--ts-color-text-secondary);font-weight:500;font-size:14px; }
+ .ts-app .demo-mobile-nav button[aria-current="page"] { color:var(--ts-color-primary-text);border-color:var(--ts-color-primary); }
+}
+@media (max-width:767px) {
+ .ts-app .demo-header { padding:0 16px;gap:8px; }
+ .ts-app .demo-brand { font-size:16px;gap:8px; }
+ .ts-app .demo-brand>.ts-icon { width:22px;height:22px; }
+ .ts-app .demo-header-right { gap:4px; }
+ .ts-app .demo-user { display:none; }
+ .ts-app .demo-top-guide { padding-inline:8px;font-size:13px; }
+ .ts-app .demo-main { padding:20px 16px calc(104px + env(safe-area-inset-bottom)); }
+ .ts-app .demo-page-head { margin-bottom:16px;align-items:flex-start; }
+ .ts-app .demo-page-head p { font-size:13px; }
+ .ts-app .demo-page-head .ts-btn { font-size:13px;padding-inline:8px; }
+ .ts-app .demo-week-head { padding:4px 8px; }
+ .ts-app .demo-week-range { font-size:14px; }
+ .ts-app .demo-week-grid { padding:8px;gap:2px; }
+ .ts-app .demo-day { min-height:76px; }
+ .ts-app .demo-day strong { font-size:18px; }
+ .ts-app .demo-day small { font-size:12px; }
+ .ts-app .demo-summary-head h2 { font-size:16px; }
+ .ts-app .demo-summary-totals { margin-top:16px; }
+ .ts-app .demo-total { padding-right:8px; }
+ .ts-app .demo-total+.demo-total { padding-left:16px; }
+ .ts-app .demo-total strong { font-size:24px; }
+ .ts-app .demo-metrics { grid-template-columns:repeat(2,minmax(0,1fr));gap:8px; }
+ .ts-app .demo-metric { padding:8px 12px; }
+ .ts-app .demo-metric strong { font-size:20px; }
+ .ts-app .demo-onsite-grid { grid-template-columns:1fr;gap:16px; }
+ .ts-app .demo-onsite-bottom { gap:8px; }
+ .ts-app .demo-onsite-bottom .ts-btn { width:100%; }
+ .ts-app .demo-onsite-grid .ts-control { font-size:16px; }
+ .ts-app .demo-entry { padding:12px; }
+ .ts-app .demo-entry-fields { grid-template-columns:minmax(0,2fr) minmax(72px,1fr);gap:12px; }
+ .ts-app .demo-entry-fields>.ts-field:first-child { grid-column:1/-1; }
+ .ts-app .demo-entry-head .ts-btn { min-height:44px; }
+ .ts-app .demo-entry-head .ts-btn .ts-icon { display:none; }
+ .ts-app .demo-entry-head .ts-row { gap:6px; }
+ .ts-app .demo-entry-head .ts-row strong { font-size:14px; }
+ .ts-app .demo-entry-content textarea { min-height:88px; }
+ .ts-app .demo-footer { padding:12px 16px calc(12px + env(safe-area-inset-bottom)); }
+ .ts-app .demo-footer-inner { display:block; }
+ .ts-app .demo-footer-meta { display:none; }
+ .ts-app .demo-footer-actions { display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr); }
+ .ts-app .demo-footer-actions .ts-btn { min-width:0;padding-inline:8px; }
+ .ts-app .guide-colors { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .ts-app .guide-grid2 { grid-template-columns:1fr; }
+ .ts-app .guide-type-row { align-items:flex-start;flex-wrap:wrap;gap:4px; }
+ .ts-app .guide-type-row small { margin-left:auto; }
+ .ts-app .guide-section { margin-top:24px; }
+}
+@media (max-width:359px) { .demo-main { padding-left:12px;padding-right:12px; } .demo-header { padding-inline:12px; } .demo-brand { font-size:15px; } .demo-brand>.ts-icon { width:20px;height:20px; } .demo-summary-head { gap:8px; } .demo-entry-head .ts-row { gap:4px; } .demo-entry-index { display:none; } .demo-page-head p { max-width:170px; } }
+</style></head>
+<body class="ts-app">
+<header class="demo-header"><div class="demo-brand"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>工时与项目成本</span></div><div class="demo-header-right"><button id="topGuide" class="ts-btn ts-btn--text demo-top-guide" type="button">设计规范</button><div class="demo-user"><div class="demo-avatar" aria-hidden="true">张</div><div class="demo-user-text">张三<div class="ts-caption ts-muted">测试员工 / 98123</div></div></div></div></header>
+<aside class="demo-sidebar" aria-label="主导航"><div class="demo-nav-caption">工作台 · 设计演示</div><button type="button" class="demo-nav-item" id="navPage" aria-current="page"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/></svg>我的工时</button><button type="button" class="demo-nav-item" data-demo="此设计包仅演示填报页面；生产环境保留原有审批入口。"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a7 7 0 0 1 14 0v2"/></svg>审批与协调</button><button type="button" class="demo-nav-item" data-demo="生产环境保留原有通知入口及未读状态。"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 7 3 8H3c0-1 3-1 3-8m7 12h-2"/></svg>通知</button><div class="demo-nav-foot"><div class="demo-nav-caption">设计包</div><button type="button" class="demo-nav-item" id="navGuide"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>组件与规范</button><p class="ts-caption ts-muted">Enterprise Blue · v1.0<br>本地预览，无真实业务写入</p></div></aside>
+<nav class="demo-mobile-nav" aria-label="移动导航"><button id="mobilePage" type="button" aria-current="page">我的工时</button><button type="button" data-demo="此设计包仅演示填报页面；生产环境保留原有审批入口。">审批与协调</button><button type="button" data-demo="生产环境保留原有通知入口及未读状态。">通知</button></nav>
+<main class="demo-main"><div class="demo-container">
+<section id="pageView" aria-labelledby="pageTitle">
+<div class="demo-page-head"><div><h1 class="ts-title" id="pageTitle">我的工时</h1><p class="ts-muted">如实记录工作，让投入被看见</p></div><button type="button" class="ts-btn ts-btn--text" id="rulesBtn"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.2"/></svg>填报规则</button></div>
+<div class="ts-alert demo-guide-note"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.2"/></svg><div>设计演示 · 2026-09-04 模拟工作日，数据仅保留在当前页面，不连接业务系统。</div></div>
+<section class="ts-card demo-week demo-section" aria-label="选择日期"><div class="demo-week-head"><div class="ts-row"><button class="ts-btn ts-btn--text ts-btn--icon" type="button" aria-label="上一周" data-demo="日期切换仅作视觉参考。"><svg class="ts-icon demo-prev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><span class="demo-week-range">08/31 — 09/06</span><button class="ts-btn ts-btn--text ts-btn--icon" type="button" aria-label="下一周" data-demo="日期切换仅作视觉参考。"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button></div><button type="button" class="ts-btn ts-btn--text" data-demo="本预览固定展示 9 月 4 日，不以样例日期替代实际工作日历。">今天</button></div><div class="demo-week-grid"><button class="demo-day " type="button" aria-pressed="false" aria-label="2026-08-31，周一，8 h" data-demo="本预览仅载入 9 月 4 日的模拟记录；生产页面沿用现有日期组件。"><small>一</small><strong>31</strong><small>8 h</small></button><button class="demo-day " type="button" aria-pressed="false" aria-label="2026-09-01，周二，8 h" data-demo="本预览仅载入 9 月 4 日的模拟记录；生产页面沿用现有日期组件。"><small>二</small><strong>1</strong><small>8 h</small></button><button class="demo-day " type="button" aria-pressed="false" aria-label="2026-09-02，周三，8 h" data-demo="本预览仅载入 9 月 4 日的模拟记录；生产页面沿用现有日期组件。"><small>三</small><strong>2</strong><small>8 h</small></button><button class="demo-day " type="button" aria-pressed="false" aria-label="2026-09-03，周四，6 h" data-demo="本预览仅载入 9 月 4 日的模拟记录；生产页面沿用现有日期组件。"><small>四</small><strong>3</strong><small>6 h</small></button><button class="demo-day " type="button" aria-pressed="true" aria-label="2026-09-04，周五，8 h" data-demo="本预览仅载入 9 月 4 日的模拟记录；生产页面沿用现有日期组件。"><small>五</small><strong>4</strong><small>8 h</small></button><button class="demo-day demo-day-weekend" type="button" aria-pressed="false" aria-label="2026-09-05，周六，无需填报" data-demo="本预览仅载入 9 月 4 日的模拟记录；生产页面沿用现有日期组件。"><small>六</small><strong>5</strong><small>无需</small></button><button class="demo-day demo-day-weekend" type="button" aria-pressed="false" aria-label="2026-09-06，周日，无需填报" data-demo="本预览仅载入 9 月 4 日的模拟记录；生产页面沿用现有日期组件。"><small>日</small><strong>6</strong><small>无需</small></button></div></section>
+<section class="ts-card demo-section" aria-labelledby="summaryTitle"><div class="demo-summary-head"><div class="ts-row"><h2 class="ts-heading" id="summaryTitle">9 月 4 日（周五）</h2><span class="ts-tag">工作日</span></div><div class="ts-row"><span class="ts-tag ts-tag--info" id="fillTag">填报完整</span><span class="ts-tag">尚未送审</span></div></div><div class="demo-summary-totals"><div class="demo-total"><span>应填</span><strong class="ts-number">8</strong><em>h</em></div><div class="demo-total"><span>已说明</span><strong class="ts-number" id="totalHours">8</strong><em>h</em></div><div class="demo-total"><span>尚差</span><strong class="ts-number" id="remainingHours">0</strong><em>h</em></div></div><div class="demo-summary-progress" role="progressbar" aria-label="填报完整度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" id="fillProgress"><div></div></div><div class="demo-metrics"><div class="demo-metric"><span>项目工作</span><strong id="projectHours">4</strong><em>h</em></div><div class="demo-metric"><span>非项目工作</span><strong id="nonProjectHours">1</strong><em>h</em></div><div class="demo-metric"><span>待分配</span><strong id="unassignedHours">3</strong><em>h</em></div><div class="demo-metric"><span>请假</span><strong>0</strong><em>h</em></div></div><div class="demo-summary-note"><span class="ts-caption ts-muted" id="actualWorkNote">实际工作 5 h · 含草稿，不代表已审批投入</span><button type="button" class="ts-btn ts-btn--text" id="progressBtn">查看审批进度<svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button></div></section>
+<section class="ts-card demo-section" aria-labelledby="onsiteTitle"><div class="demo-summary-head"><h2 class="ts-heading demo-onsite-title" id="onsiteTitle"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><path d="M19 10c0 6-7 12-7 12S5 16 5 10a7 7 0 0 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>现场日</h2><span class="ts-tag" id="onsiteStatus">草稿</span></div><label class="ts-check" for="onsiteToggle"><input id="onsiteToggle" type="checkbox" checked>当天因项目出差</label><p class="ts-caption ts-muted">含出差交通日与必要驻留，独立记录 1 个自然日；实际工时另行填报。</p><div id="onsiteDetails"><div class="demo-onsite-grid"><div class="ts-field"><label class="ts-label" for="onsiteProject">现场归属项目</label><select class="ts-control" id="onsiteProject"><option>测试 · 智能制造实施项目</option><option>测试 · 数据平台研发项目</option></select></div><div class="ts-field"><label class="ts-label" for="onsiteReason">现场事由</label><input class="ts-control" id="onsiteReason" value="项目现场设备联调" maxlength="200"></div></div><div class="demo-onsite-bottom"><span class="ts-caption ts-muted">现场日单独审批，不替代当日工时说明。</span><button type="button" class="ts-btn" id="onsiteSubmit">仅提交当日现场日</button></div></div></section>
+<section class="ts-card demo-section" aria-labelledby="recordsTitle"><div class="ts-card-head"><h2 class="ts-heading" id="recordsTitle">当天记录 <span class="ts-muted" id="recordCount">（3 条）</span></h2><button class="ts-btn ts-btn--text" type="button" id="copyBtn"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V3H3v13h5"/></svg>复制上一工作日</button></div><div id="entries"></div><button type="button" class="ts-btn ts-btn--add ts-btn--block demo-add" id="addBtn"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>添加记录</button><p class="demo-record-tip">填报完整度与审批状态分别展示。已通过记录需按规则申请更正。</p></section>
+<div class="ts-caption ts-muted">主操作预览当前自然周的送审范围；现场日可独立送审。此预览不创建真实审批包。</div>
+</section>
+<section id="guideView" aria-labelledby="guideTitle" hidden>
+<div class="demo-page-head"><div><div class="guide-kicker">TIMESHEET / ENTERPRISE BLUE / 1.0</div><h1 class="ts-title" id="guideTitle">企业蓝设计系统</h1><p class="ts-muted">统一视觉，不重做业务。适配桌面与企业微信移动端。</p></div></div>
+<div class="ts-alert ts-alert--info"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.2"/></svg><div>本项目自定义规范，非企业微信官方 Token。蓝色表达行动，绿色表达已通过；填报完整、审批状态、月份封账分开呈现。</div></div>
+<div class="guide-section"><div class="guide-section-title"><span class="guide-index">01</span><h2 class="ts-heading">颜色与语义</h2></div><div class="guide-colors"><div class="guide-swatch"><div class="guide-swatch-color" style="background:#1664FF"></div><div class="guide-swatch-label"><strong>主色 / 行动</strong><code>#1664FF</code></div></div><div class="guide-swatch"><div class="guide-swatch-color" style="background:#F5F7FA"></div><div class="guide-swatch-label"><strong>页面背景</strong><code>#F5F7FA</code></div></div><div class="guide-swatch"><div class="guide-swatch-color" style="background:#FFFFFF"></div><div class="guide-swatch-label"><strong>卡片 / 表单</strong><code>#FFFFFF</code></div></div><div class="guide-swatch"><div class="guide-swatch-color" style="background:#1F2937"></div><div class="guide-swatch-label"><strong>主要文字</strong><code>#1F2937</code></div></div><div class="guide-swatch"><div class="guide-swatch-color" style="background:#087A52"></div><div class="guide-swatch-label"><strong>已通过</strong><code>#087A52</code></div></div><div class="guide-swatch"><div class="guide-swatch-color" style="background:#9B5A00"></div><div class="guide-swatch-label"><strong>警告</strong><code>#9B5A00</code></div></div><div class="guide-swatch"><div class="guide-swatch-color" style="background:#C1323E"></div><div class="guide-swatch-label"><strong>错误 / 驳回</strong><code>#C1323E</code></div></div><div class="guide-swatch"><div class="guide-swatch-color" style="background:#667085"></div><div class="guide-swatch-label"><strong>辅助文字</strong><code>#667085</code></div></div></div></div>
+<div class="guide-section"><div class="guide-section-title"><span class="guide-index">02</span><h2 class="ts-heading">字体与层级</h2></div><div class="ts-card"><div class="guide-type-row"><span class="ts-title">清晰、克制、可持续使用</span><small>24 / 32 · 600</small></div><div class="guide-type-row"><span class="ts-heading">当天记录与现场日</span><small>16 / 24 · 600</small></div><div class="guide-type-row"><span>如实记录实际投入，分别展示审批状态。</span><small>14 / 22 · 400</small></div><div class="guide-type-row"><span class="ts-caption ts-muted">辅助说明保持可读，不使用过浅灰字。</span><small>12 / 18 · 400</small></div></div></div>
+<div class="guide-section"><div class="guide-section-title"><span class="guide-index">03</span><h2 class="ts-heading">按钮与操作层级</h2></div><div class="ts-card ts-stack"><div class="ts-row"><button class="ts-btn ts-btn--primary" type="button" data-demo="主按钮：每个操作区只突出一个主要行动。">预览本周送审</button><button class="ts-btn" type="button" data-demo="次按钮：保存与取消等。">保存草稿</button><button class="ts-btn ts-btn--text" type="button" data-demo="文字按钮：次要导航和轻量操作。">查看审批进度</button><button class="ts-btn ts-btn--danger" type="button" data-demo="危险操作使用红色；不可与普通导航混淆。">移除</button></div><div class="ts-divider"></div><div class="ts-row"><button class="ts-btn ts-btn--primary" aria-busy="true" type="button" data-demo="这是 loading 样式演示，无真实请求。"><span class="ts-spinner" aria-hidden="true"></span>保存中…</button><button class="ts-btn" disabled type="button">已封账</button><span class="ts-caption ts-muted">禁用原因：需取得指定范围的处理授权。</span></div><p class="ts-caption ts-muted">桌面高度 40px / 移动端 44px · 控件圆角 6px · 使用键盘 Tab 可查看焦点轮廓。</p></div></div>
+<div class="guide-section"><div class="guide-section-title"><span class="guide-index">04</span><h2 class="ts-heading">表单与反馈</h2></div><div class="guide-grid2"><div class="ts-card ts-stack"><div class="ts-field"><label class="ts-label" for="sampleNormal">普通字段</label><input class="ts-control" id="sampleNormal" placeholder="请输入工作内容"></div><div class="ts-field"><label class="ts-label" for="sampleReadonly">只读字段</label><input class="ts-control" id="sampleReadonly" value="来源：OA 同步" readonly><span class="ts-caption ts-muted">只读仍可阅读，不应与禁用态混淆。</span></div><div class="ts-field"><label class="ts-label" for="sampleDisabled">不可操作字段</label><input class="ts-control" id="sampleDisabled" value="当前不可操作" disabled></div></div><div class="ts-card ts-stack"><div class="ts-field"><label class="ts-label" for="sampleError">错误字段</label><textarea class="ts-control" id="sampleError" aria-invalid="true" aria-describedby="sampleErrorText">设备调试</textarea><div class="ts-field-foot"><span class="ts-error" id="sampleErrorText">实际工作内容不足 10 字，请补充具体事项。</span><span class="ts-field-count">4/200</span></div></div><div class="ts-alert ts-alert--warning"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.2"/></svg><div>基数或同步数据存在待核实问题时，使用持续提示，不能将其当成零工时。</div></div></div></div></div>
+<div class="guide-section"><div class="guide-section-title"><span class="guide-index">05</span><h2 class="ts-heading">状态，按不同维度表达</h2></div><div class="ts-card ts-stack"><div class="ts-row"><span class="ts-tag">草稿</span><span class="ts-tag ts-tag--info">待审批</span><span class="ts-tag ts-tag--success"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>已通过</span><span class="ts-tag ts-tag--danger">已驳回</span><span class="ts-tag ts-tag--warning">部分驳回</span></div><div class="ts-row"><span class="ts-tag"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V6a4 4 0 1 1 8 0v4m-4 5v2"/></svg>月份已封账</span><span class="ts-tag ts-tag--info">待审批</span><span class="ts-caption ts-muted">封账不能覆盖条目的真实审批状态。</span></div><div class="ts-row"><span class="ts-tag ts-tag--info">项目</span><span class="ts-tag">非项目</span><span class="ts-tag">待分配</span><span class="ts-caption ts-muted">类别不是审批结论；待分配不等于错误。</span></div></div></div>
+<div class="guide-section"><div class="guide-section-title"><span class="guide-index">06</span><h2 class="ts-heading">数据与表格</h2></div><div class="ts-table-wrap"><table class="ts-table"><caption class="ts-sr-only">演示记录表，不展示无权限的成本</caption><thead><tr><th scope="col">归集对象</th><th scope="col">类别</th><th scope="col" class="ts-numeric">工时</th><th scope="col">状态</th></tr></thead><tbody><tr><td>智能制造实施项目</td><td><span class="ts-tag ts-tag--info">项目</span></td><td class="ts-numeric">4 h</td><td><span class="ts-tag">草稿</span></td></tr><tr><td>内部管理与协作</td><td><span class="ts-tag">非项目</span></td><td class="ts-numeric">1 h</td><td><span class="ts-tag">草稿</span></td></tr><tr><td>待分配时间</td><td><span class="ts-tag">非项目</span></td><td class="ts-numeric">3 h</td><td><span class="ts-tag">草稿</span></td></tr></tbody></table></div><p class="ts-caption ts-muted" style="margin-top:12px">数字右对齐、等宽数字。无数据用“—”，不能用 0 替代错误、未知或无权限。</p></div>
+<div class="guide-section"><div class="guide-section-title"><span class="guide-index">07</span><h2 class="ts-heading">空态与加载</h2></div><div class="guide-grid2"><div class="ts-card ts-empty"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h9l5 5v13H5Zm9 0v6h5M8 13h8m-8 4h5"/></svg><h3 class="ts-heading">当天还没有记录</h3><p>有实际投入时，如实添加工时。</p><button class="ts-btn ts-btn--text" type="button" data-demo="真实空态应跳转到新增工时，而不是自动生成记录。">添加记录</button></div><div class="ts-card ts-stack" aria-label="骨架屏样式示例"><div class="ts-skeleton" style="width:40%;height:20px"></div><div class="ts-skeleton" style="width:100%;height:40px"></div><div class="ts-skeleton" style="width:80%"></div><p class="ts-caption ts-muted">加载保留布局；请求失败显示重试，不能渲染成 0 小时。</p></div></div></div>
+<div class="guide-section"><div class="guide-section-title"><span class="guide-index">08</span><h2 class="ts-heading">落地边界</h2></div><div class="ts-card"><div class="guide-rule"><strong>不让示意图修改业务</strong><p>保留自然周提交、现场日独立送审、原有校验及权限；工作日历来自真实数据。</p></div><div class="guide-rule"><strong>移动端不是缩小的桌面</strong><p>手机保留三项顶部导航，单列表单，44px 控件与底部安全区；桌面使用 200px 侧栏。</p></div><div class="guide-rule"><strong>沿用技术栈，先映射主题</strong><p>优先接入现有 UI 库主题；Token 统一前缀。不引入第二套组件库，不全局覆盖原生元素。</p></div></div></div>
+<div class="demo-version">详见 DESIGN_SYSTEM.md 与 CODEX_HANDOFF.md。本页面是样式与局部交互演示，未实现真实审批、权限或数据同步。</div>
+</section>
+</div></main>
+<footer class="demo-footer" id="actionFooter"><div class="demo-footer-inner"><div class="demo-footer-meta"><div class="ts-caption ts-muted" id="saveState" role="status" aria-live="polite">演示草稿 · 未写入业务系统</div><div class="ts-caption ts-muted">按自然周送审，现场日可独立处理。</div></div><div class="demo-footer-actions"><button type="button" class="ts-btn" id="saveBtn">保存草稿</button><button type="button" class="ts-btn ts-btn--primary demo-footer-primary" id="submitBtn">预览本周送审</button></div></div></footer>
+<dialog class="ts-dialog" id="dialog" aria-labelledby="dialogTitle"><div class="ts-dialog-head"><h2 class="ts-heading" id="dialogTitle"></h2><button class="ts-btn ts-btn--text ts-btn--icon" type="button" id="dialogClose" aria-label="关闭对话框"><svg class="ts-icon " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button></div><div class="ts-dialog-body" id="dialogBody"></div><div class="ts-dialog-foot"><button class="ts-btn" type="button" id="dialogCancel">取消</button><button class="ts-btn ts-btn--primary" type="button" id="dialogConfirm">知道了</button></div></dialog>
+<div class="ts-toast" id="toast" role="status" aria-live="polite" hidden></div>
+<style>.demo-prev{transform:rotate(180deg)}</style>
+<script>
+'use strict';
+(() => {
+ const $ = id => document.getElementById(id);
+ // 仅为预览的固定模拟参数；生产环境必须从业务配置读取。
+ const fixture = {base:8, step:0.5, maxDay:24, minContent:10, maxContent:200};
+ const objects = {
+   project:{name:'测试 · 智能制造实施项目', category:'PROJECT', type:'实际工作'},
+   research:{name:'测试 · 数据平台研发项目', category:'PROJECT', type:'实际工作'},
+   internal:{name:'测试 · 内部管理与协作', category:'NON_PROJECT', type:'实际工作'},
+   unassigned:{name:'待分配时间', category:'NON_PROJECT', type:'待分配'},
+ };
+ let entries = [
+  {id:1,object:'project',hours:'4',content:'完成现场设备调试与问题复核'},
+  {id:2,object:'internal',hours:'1',content:'整理部门协作事项与项目问题清单'},
+  {id:3,object:'unassigned',hours:'3',content:'暂无任务安排'}
+ ];
+ let nextId=4, toastTimer=0, onConfirm=null, lastTrigger=null, guide=false;
+ const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
+ function toast(text) { clearTimeout(toastTimer); $('toast').textContent=text; $('toast').hidden=false;toastTimer=setTimeout(()=>$('toast').hidden=true,4200); }
+ function modal(title,text,{confirm='知道了',action=null,cancel=false}={}) {
+  lastTrigger=document.activeElement; $('dialogTitle').textContent=title; $('dialogBody').textContent=text;
+  $('dialogBody').style.whiteSpace='pre-line';$('dialogConfirm').textContent=confirm;$('dialogCancel').hidden=!cancel;onConfirm=action;$('dialog').showModal();
+ }
+ function closeModal() { $('dialog').close(); if(lastTrigger?.isConnected) lastTrigger.focus(); }
+ $('dialogClose').addEventListener('click',closeModal);$('dialogCancel').addEventListener('click',closeModal);
+ $('dialogConfirm').addEventListener('click',()=>{ const action=onConfirm;closeModal();onConfirm=null;action?.(); });
+ $('dialog').addEventListener('cancel',()=>{if(lastTrigger?.isConnected) setTimeout(()=>lastTrigger.focus(),0);});
+ document.querySelectorAll('[data-demo]').forEach(el=>el.addEventListener('click',()=>toast(el.dataset.demo)));
+ function switchView(showGuide) {guide=showGuide;$('pageView').hidden=guide;$('guideView').hidden=!guide;$('actionFooter').hidden=guide;$('topGuide').textContent=guide?'返回页面':'设计规范';
+  for(const id of ['navPage','mobilePage']) { if(!guide)$(id).setAttribute('aria-current','page');else $(id).removeAttribute('aria-current'); }
+  if(guide)$('navGuide').setAttribute('aria-current','page');else $('navGuide').removeAttribute('aria-current');window.scrollTo(0,0);
+ }
+ $('topGuide').addEventListener('click',()=>switchView(!guide));$('navGuide').addEventListener('click',()=>switchView(true));$('navPage').addEventListener('click',()=>switchView(false));$('mobilePage').addEventListener('click',()=>switchView(false));
+ function markDirty(){$('saveState').textContent='演示内容已修改 · 尚未保存';}
+ function getTotals(){let project=0,nonProject=0,waiting=0,valid=true;for(const e of entries){const h=Number(e.hours);if(e.hours.trim()===''||!Number.isFinite(h)||h<0||Math.abs(h/fixture.step-Math.round(h/fixture.step))>1e-8){valid=false;continue;}if(e.object==='unassigned')waiting+=h;else if(objects[e.object].category==='PROJECT')project+=h;else nonProject+=h;}return {project,nonProject,waiting,total:project+nonProject+waiting,actual:project+nonProject,valid};}
+ function updateTotals(){const t=getTotals();$('totalHours').textContent=t.valid?fmt(t.total):'—';$('remainingHours').textContent=t.valid?fmt(Math.max(fixture.base-t.total,0)):'—';$('projectHours').textContent=t.valid?fmt(t.project):'—';$('nonProjectHours').textContent=t.valid?fmt(t.nonProject):'—';$('unassignedHours').textContent=t.valid?fmt(t.waiting):'—';$('actualWorkNote').textContent=t.valid?`实际工作 ${fmt(t.actual)} h · 含草稿，不代表已审批投入`:'请修正工时输入后查看合计';$('recordCount').textContent=`（${entries.length} 条）`;const full=t.valid&&t.total>=fixture.base;
+  $('fillTag').textContent=!t.valid?'输入待修正':full?'填报完整':'待补齐';$('fillTag').className='ts-tag '+(full?'ts-tag--info':'ts-tag--warning');const pct=t.valid?Math.min(t.total/fixture.base*100,100):0;$('fillProgress').setAttribute('aria-valuenow',String(pct));$('fillProgress').firstElementChild.style.width=pct+'%';
+ }
+ function createField(labelText,control,id){const wrap=document.createElement('div');wrap.className='ts-field';const label=document.createElement('label');label.className='ts-label';label.htmlFor=id;label.textContent=labelText;control.id=id;control.className='ts-control';wrap.append(label,control);return wrap;}
+ function render(){const host=$('entries');host.replaceChildren();if(entries.length===0){const empty=document.createElement('div');empty.className='ts-empty';empty.textContent='当天还没有记录，请如实添加实际投入。';host.append(empty);}
+  entries.forEach((e,index)=>{const obj=objects[e.object];const card=document.createElement('article');card.className='demo-entry';card.dataset.id=String(e.id);
+   const head=document.createElement('div');head.className='demo-entry-head';const headTitle=document.createElement('div');headTitle.className='ts-row';const idx=document.createElement('span');idx.className='demo-entry-index';idx.textContent=String(index+1);const name=document.createElement('strong');name.textContent=`记录 ${index+1}`;const category=document.createElement('span');category.className='ts-tag '+(obj.category==='PROJECT'?'ts-tag--info':'');category.textContent=obj.category==='PROJECT'?'项目':'非项目';const status=document.createElement('span');status.className='ts-tag';status.textContent='草稿';headTitle.append(idx,name,category,status);
+   const del=document.createElement('button');del.type='button';del.className='ts-btn ts-btn--danger';del.textContent='移除';del.setAttribute('aria-label',`移除记录 ${index+1}`);del.addEventListener('click',()=>modal('移除草稿记录',`将从当前演示页面移除记录 ${index+1}。此操作不会影响任何业务数据。`,{confirm:'移除',cancel:true,action:()=>{entries=entries.filter(x=>x.id!==e.id);render();markDirty();$('addBtn').focus();toast('已从当前演示中移除记录');}}));head.append(headTitle,del);card.append(head);
+   const fields=document.createElement('div');fields.className='demo-entry-fields';const select=document.createElement('select');for(const [k,o] of Object.entries(objects)){const opt=document.createElement('option');opt.value=k;opt.textContent=o.name;select.append(opt);}select.value=e.object;select.addEventListener('change',()=>{e.object=select.value;render();markDirty();document.getElementById(`object-${e.id}`).focus();});fields.append(createField('归集对象',select,`object-${e.id}`));
+   const type=document.createElement('input');type.value=obj.type;type.readOnly=true;fields.append(createField('类型',type,`type-${e.id}`));const hours=document.createElement('input');hours.type='number';hours.inputMode='decimal';hours.step=String(fixture.step);hours.min=String(fixture.step);hours.max=String(fixture.maxDay);hours.value=e.hours;hours.required=true;hours.addEventListener('input',()=>{e.hours=hours.value;hours.removeAttribute('aria-invalid');$('saveState').textContent='演示内容已修改 · 尚未保存';updateTotals();});fields.append(createField('小时数',hours,`hours-${e.id}`));card.append(fields);
+   const content=document.createElement('textarea');content.value=e.content;content.maxLength=fixture.maxContent;const contentWrap=createField(e.object==='unassigned'?'待分配说明':'工作内容',content,`content-${e.id}`);contentWrap.classList.add('demo-entry-content');const foot=document.createElement('div');foot.className='ts-field-foot';const err=document.createElement('span');err.className='ts-error';err.id=`error-${e.id}`;const count=document.createElement('span');count.className='ts-field-count';count.textContent=`${Array.from(e.content).length}/${fixture.maxContent}`;foot.append(err,count);content.setAttribute('aria-describedby',err.id);content.addEventListener('input',()=>{e.content=content.value;count.textContent=`${Array.from(e.content).length}/${fixture.maxContent}`;content.removeAttribute('aria-invalid');err.textContent='';markDirty();});contentWrap.append(foot);card.append(contentWrap);host.append(card);
+  });updateTotals();
+ }
+ function validateEntries(){let first=null;for(const e of entries){const h=Number(e.hours),hours=$(`hours-${e.id}`),content=$(`content-${e.id}`),err=$(`error-${e.id}`);let messages=[];if(e.hours.trim()===''||!Number.isFinite(h)||h<=0||Math.abs(h/fixture.step-Math.round(h/fixture.step))>1e-8){hours.setAttribute('aria-invalid','true');messages.push('请填写大于 0、以 0.5h 为步长的工时。');first??=hours;}else hours.removeAttribute('aria-invalid');const length=Array.from(e.content.trim()).length;if((e.object==='unassigned'&&length===0)||(e.object!=='unassigned'&&length<fixture.minContent)){content.setAttribute('aria-invalid','true');messages.push(e.object==='unassigned'?'请填写待分配说明。':'实际工作内容不少于 10 字。');first??=content;}else content.removeAttribute('aria-invalid');err.textContent=messages.join(' ');hours.setAttribute('aria-describedby',err.id);}if(first){first.focus();first.scrollIntoView({block:'center'});toast('请先修正标出的字段。');return false;}const total=getTotals();if(!total.valid||total.total>fixture.maxDay){toast('演示校验：单日已说明工时不能超过 24h。');return false;}return true;}
+ $('addBtn').addEventListener('click',()=>{const id=nextId++;entries.push({id,object:'project',hours:'',content:''});render();markDirty();document.getElementById(`object-${id}`).focus();document.getElementById(`object-${id}`).scrollIntoView({block:'center'});});
+ $('copyBtn').addEventListener('click',()=>modal('复制上一工作日','生产页面沿用已有复制能力：复制对象与小时数，实际工作内容重新填写，待分配重新确认。\n\n此预览未载入上一工作日记录，不生成模拟副本。'));
+ $('saveBtn').addEventListener('click',()=>{const b=$('saveBtn');b.disabled=true;b.setAttribute('aria-busy','true');b.textContent='保存中…';$('saveState').textContent='正在演示保存反馈…';setTimeout(()=>{b.disabled=false;b.removeAttribute('aria-busy');b.textContent='保存草稿';$('saveState').textContent='保存反馈演示完成 · 仅当前页面有效';toast('保存反馈演示完成；刷新或关闭页面后数据不会保留。');},450);});
+ $('submitBtn').addEventListener('click',()=>{if(!validateEntries())return;const t=getTotals();if(t.total<fixture.base){modal('工时尚未说明完整',`当前模拟工作日尚差 ${fmt(fixture.base-t.total)}h，请补录真实投入或确认待分配时间。\n\n符合条件的现场日仍可独立送审。`);return;}modal('本周送审预览 · 设计演示',`目标自然周：2026-08-31 至 2026-09-06\n\n本预览仅载入 9 月 4 日：${entries.length} 条草稿，已说明 ${fmt(t.total)}h，实际工作 ${fmt(t.actual)}h。${$('onsiteToggle').checked?'现场日草稿 1 天。':'未选择现场日。'}\n\n此处不是完整周数据，也不会生成真实审批包。生产环境必须使用现有周级校验、权限、拆包与封账规则。`);});
+ $('onsiteToggle').addEventListener('change',()=>{$('onsiteDetails').hidden=!$('onsiteToggle').checked;$('onsiteStatus').hidden=!$('onsiteToggle').checked;markDirty();});
+ $('onsiteReason').addEventListener('input',markDirty);$('onsiteProject').addEventListener('change',markDirty);
+ $('onsiteSubmit').addEventListener('click',()=>{if(!$('onsiteReason').value.trim()){toast('请填写现场事由，供审批人核实。');$('onsiteReason').focus();return;}modal('现场日独立送审 · 设计演示','当前将预览 9 月 4 日的现场日，独立记录 1 个自然日。\n\n不替代工时说明、不自动补记工时。此处不调用接口，不生成真实审批项；生产校验沿用既有实现。');});
+ $('progressBtn').addEventListener('click',()=>modal('审批进度','演示中的工时与现场日均为草稿，尚未送审。\n\n填报完整不代表审批通过。实际审批入口应展示各条目及现场日的真实状态。'));
+ $('rulesBtn').addEventListener('click',()=>modal('填报规则 · 展示摘要','已说明 = 实际工作 + 待分配；请假不加入已说明。\n实际工作 = 项目工作 + 非项目实际工作。\n\n按自然周送审；现场日可独立送审，工时为 0 时也保留入口。\n\n本预览参数仅为模拟值。生产环境以现有 PRD、工作日历与业务配置为准。'));
+ render();
+})();
+</script></body></html>

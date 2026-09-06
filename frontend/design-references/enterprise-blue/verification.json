@@ -1,0 +1,91 @@
+{
+  "mode": "real-local-api-read-only",
+  "date": "2026-09-05",
+  "layouts": [
+    {
+      "app": "h5",
+      "viewport": 320,
+      "document": 320
+    },
+    {
+      "app": "h5",
+      "viewport": 375,
+      "document": 375
+    },
+    {
+      "app": "h5",
+      "viewport": 390,
+      "document": 390
+    },
+    {
+      "app": "h5",
+      "viewport": 768,
+      "document": 768
+    },
+    {
+      "app": "h5",
+      "viewport": 1024,
+      "document": 1024
+    },
+    {
+      "app": "h5",
+      "viewport": 1440,
+      "document": 1440
+    },
+    {
+      "app": "admin",
+      "viewport": 320,
+      "document": 320
+    },
+    {
+      "app": "admin",
+      "viewport": 375,
+      "document": 375
+    },
+    {
+      "app": "admin",
+      "viewport": 390,
+      "document": 390
+    },
+    {
+      "app": "admin",
+      "viewport": 768,
+      "document": 768
+    },
+    {
+      "app": "admin",
+      "viewport": 1024,
+      "document": 1024
+    },
+    {
+      "app": "admin",
+      "viewport": 1440,
+      "document": 1440
+    }
+  ],
+  "contrast": [
+    {
+      "app": "h5",
+      "target": "week-submit",
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(22, 100, 255)",
+      "borderRadius": "6px",
+      "ratio": 4.882604519841579
+    },
+    {
+      "app": "admin",
+      "target": "week-submit",
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(22, 100, 255)",
+      "borderRadius": "6px",
+      "ratio": 4.882604519841579
+    }
+  ],
+  "screenshots": [
+    "design-references/enterprise-blue/h5-timesheet.png",
+    "design-references/enterprise-blue/h5-timesheet-full.png",
+    "design-references/enterprise-blue/admin-timesheet.png",
+    "design-references/enterprise-blue/admin-timesheet-full.png"
+  ],
+  "pageErrors": []
+}
