@@ -69,7 +69,9 @@ python3 scripts/verify-local-recovery.py
 
 ## 真实接入与发布
 
-源码托管在 GitHub 不会自动启动应用。当前临时外网演示由 Docker 运行，使用独立测试数据库及网页访问口令；启动、恢复与停止见[外网演示环境](docs/development/外网演示环境.md)。该入口仍依赖演示主机，长期固定访问需单独部署后端、数据库及 HTTPS 入口。
+源码托管在公开仓库 [superborges/team](https://github.com/superborges/team)。阿里云稳定演示使用 [Coolify 部署配置](docs/development/Coolify部署.md)，从源码构建前后端与独立数据库，目标域名为 `team.ninestories.cn`；首次上线需要在 Coolify 配置运行口令、域名并完成部署。
+
+本机临时外网演示由 Docker 运行，使用独立测试数据库及网页访问口令；启动、恢复与停止见[外网演示环境](docs/development/外网演示环境.md)。该临时入口仍依赖演示主机。
 
 按用户要求先完成本地验证。生产 profile 不提供本地登录；本地样例迁移仅在 `db/local`。真实 SSO 必须在服务端验证既有企微身份关联，OA 接入复用已核实来源和导入处理流程。
 

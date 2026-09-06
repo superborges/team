@@ -1,0 +1,16 @@
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /build
+COPY backend/pom.xml ./pom.xml
+COPY backend/src ./src
+RUN mvn -B -ntp -DskipTests package
+
+FROM eclipse-temurin:21-jre@sha256:7a65df4b22d2de92d4e04056e884f3b9122d70b21e2847fd66084278bd0ce037
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --gid 10001 worklog \
+    && useradd --uid 10001 --gid 10001 --no-create-home worklog \
+    && mkdir /app/exports && chown worklog:worklog /app/exports
+COPY --from=build --chown=worklog:worklog /build/target/worklog-0.1.0-SNAPSHOT.jar /app/worklog.jar
+USER 10001:10001
+ENTRYPOINT ["java", "-jar", "/app/worklog.jar"]

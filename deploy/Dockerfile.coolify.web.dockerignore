@@ -1,0 +1,16 @@
+**
+!deploy/
+!deploy/nginx.demo.conf
+!frontend/
+!frontend/package.json
+!frontend/package-lock.json
+!frontend/tsconfig.json
+!frontend/apps/
+!frontend/apps/**
+!frontend/packages/
+!frontend/packages/**
+**/node_modules
+**/dist
+**/dist-demo
+**/.env*
+**/.DS_Store

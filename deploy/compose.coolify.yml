@@ -1,0 +1,119 @@
+# Standalone demo built from Git source. Assign an HTTPS domain to web in Coolify.
+# Supply all four passwords in Coolify; no local files, public database ports or tunnel.
+x-backend-environment: &backend-environment
+  DB_URL: jdbc:mysql://mysql:3306/worklog_demo?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true
+  DB_USER: worklog_demo
+  DB_PASSWORD: ${DB_APP_PASSWORD:?}
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  REDIS_PASSWORD: ${REDIS_PASSWORD:?}
+  SPRING_SESSION_REDIS_NAMESPACE: worklog:coolify-demo:session
+  SERVER_SERVLET_SESSION_COOKIE_NAME: WORKLOG_DEMO_SESSION
+  SERVER_SERVLET_SESSION_COOKIE_SECURE: "true"
+  SERVER_SERVLET_SESSION_COOKIE_HTTP_ONLY: "true"
+  SERVER_SERVLET_SESSION_COOKIE_SAME_SITE: lax
+  APP_BUSINESS_ZONE: Asia/Shanghai
+  EXPORT_DIR: /app/exports
+
+x-backend: &backend
+  build:
+    context: ..
+    dockerfile: deploy/Dockerfile.coolify.backend
+  user: "10001:10001"
+  volumes:
+    - exports:/app/exports
+  read_only: true
+  tmpfs: ["/tmp"]
+  restart: unless-stopped
+
+services:
+  mysql:
+    image: mysql:8.4@sha256:b3b90af2a6552ae30c266fdb7d5dd55f3afb72404bb78d37fe8a23eb857fd3fb
+    environment:
+      MYSQL_DATABASE: worklog_demo
+      MYSQL_USER: worklog_demo
+      MYSQL_PASSWORD: ${DB_APP_PASSWORD:?}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?}
+      TZ: UTC
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_0900_ai_ci"]
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$${MYSQL_PASSWORD}\" mysql --protocol=TCP -h 127.0.0.1 -u \"$${MYSQL_USER}\" \"$${MYSQL_DATABASE}\" -e 'SELECT 1' >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4@sha256:71da9275c5f3fcb97d0fa0c8c5b36cc995327265420f17a04bfd544f458059f7
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?}", "--appendonly", "yes"]
+    environment:
+      REDISCLI_AUTH: ${REDIS_PASSWORD:?}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    <<: *backend
+    environment:
+      <<: *backend-environment
+      SPRING_PROFILES_ACTIVE: local,api
+      SPRING_FLYWAY_ENABLED: "true"
+      SERVER_ADDRESS: 0.0.0.0
+      SERVER_PORT: "8081"
+      APP_DEMO_ACCESS_ENABLED: "true"
+      APP_DEMO_ACCESS_USER: preview
+      APP_DEMO_ACCESS_PASSWORD: ${DEMO_ACCESS_PASSWORD:?}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "--max-time", "5", "http://127.0.0.1:8081/actuator/health"]
+      interval: 10s
+      timeout: 6s
+      retries: 18
+      start_period: 60s
+
+  worker:
+    <<: *backend
+    environment:
+      <<: *backend-environment
+      SPRING_PROFILES_ACTIVE: local,worker
+      SPRING_FLYWAY_ENABLED: "false"
+      APP_DEMO_ACCESS_ENABLED: "false"
+    # The API finishes Flyway before it becomes healthy. Only the API migrates.
+    depends_on:
+      api:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.coolify.web
+    expose: ["80"]
+    depends_on:
+      api:
+        condition: service_healthy
+    read_only: true
+    tmpfs: ["/var/cache/nginx", "/var/run", "/tmp"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/demo-access/login?target=h5"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+  redis-data:
+  exports:
