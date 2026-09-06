@@ -33,13 +33,15 @@ API 与 worker 均以 `10001:10001` 运行，共享 `exports` 命名卷；镜像
 
 四个变量没有内置值；缺失时 Compose 会停止部署。MySQL 初始化变量只对空数据卷生效，已有数据库修改密码需先执行数据库账号变更，再同步 Coolify 变量；仅修改变量不会重设数据库密码。
 
-Coolify v4.1.2 在 `build` 时也会解析完整 Compose，但构建环境不包含上述运行时口令。因此在 General 的 **Custom Build Command** 填入以下命令，使用仅对构建进程有效的普通占位值；**Custom Start Command** 保留默认值。Coolify 会自动补充 Compose 文件、项目名和仓库根目录参数，启动时再读取真实运行时口令。不要把占位值保存为运行时变量，也不要为真实口令打开 Available at Buildtime。
+Coolify v4.1.2 在 `build` 时也会解析完整 Compose，但构建环境不包含上述运行时口令。因此在 General 的 **Custom Build Command** 填入以下命令，使用仅对构建进程有效的普通占位值；**Custom Start Command** 保留默认值。Coolify 会自动补充 Compose 文件、构建环境文件和仓库根目录参数，启动时再读取真实运行时口令。不要把占位值保存为运行时变量，也不要为真实口令打开 Available at Buildtime。
 
 ```sh
-DB_ROOT_PASSWORD=build-only DB_APP_PASSWORD=build-only REDIS_PASSWORD=build-only DEMO_ACCESS_PASSWORD=build-only docker compose build
+DB_ROOT_PASSWORD=build-only DB_APP_PASSWORD=build-only REDIS_PASSWORD=build-only DEMO_ACCESS_PASSWORD=build-only docker compose --parallel 1 build
 ```
 
 构建上下文以仓库根目录为准；本地运行同一文件时必须加 `--project-directory .`，与 Coolify 的路径解析保持一致。
+
+`--parallel 1` 限制 Compose 构建并发。两份 Dockerfile 仅在 `build` 阶段限制 Maven JVM 堆为 `384 MiB`、可用处理器数为 `1`，Node V8 老生代堆为 `512 MiB`。这些堆与并行控制不是整个构建的硬内存上限，BuildKit、非堆内存及原生模块仍有额外开销，也不能保证 `2 GiB` 宿主机可同时容纳 Coolify、已有应用和本系统。运行阶段的 JVM 与服务配置不受这些构建参数影响。
 
 ## 使用与验收
 
@@ -57,7 +59,7 @@ DB_ROOT_PASSWORD=build-only DB_APP_PASSWORD=build-only REDIS_PASSWORD=build-only
 
 ```sh
 docker compose --project-directory . -p team-coolify-check -f deploy/compose.coolify.yml config --quiet
-docker compose --project-directory . -p team-coolify-check -f deploy/compose.coolify.yml build
+docker compose --project-directory . -p team-coolify-check -f deploy/compose.coolify.yml --parallel 1 build
 docker compose --project-directory . -p team-coolify-check -f deploy/compose.coolify.yml up -d
 docker compose --project-directory . -p team-coolify-check -f deploy/compose.coolify.yml ps
 docker compose --project-directory . -p team-coolify-check -f deploy/compose.coolify.yml exec -T api curl --fail http://127.0.0.1:8081/actuator/health
@@ -70,3 +72,5 @@ docker compose --project-directory . -p team-coolify-check -f deploy/compose.coo
 2026-09-06 已在本地 Linux/arm64 完成两个源码 Docker build：前端通过依赖安装、类型检查与 demo 打包，后端通过 Maven 编译打包（跳过单元测试执行）。镜像检查确认 Nginx 配置有效、仅包含构建静态产物、JAR 包含业务与演示迁移、`10001:10001` 可写新建导出卷。
 
 随后用随机临时口令、刚构建的镜像和独立 `team-coolify-check` 项目运行了完整五服务：MySQL、Redis、API、web 全部健康；worker 产生新鲜心跳且无错误日志；网页口令表单返回 `200`、匿名业务 API 返回 `401`；API 和 worker 的非 root 用户均可写同一导出卷。验证没有映射宿主机端口，结束后已清理专用容器、网络和数据卷，已有演示容器保持运行。构建、运行日志与 `checks.json` 保存在未提交的 `.local/coolify-build/`；仍需完成服务器部署后的 HTTPS 浏览器验收。
+
+2026-09-07 在本地 Linux/arm64 专用容器中串行验证了上述堆参数：后端以 `768 MiB / 1 CPU` 硬限制完成 Maven 打包，容器内存峰值 `445.26 MiB`；前端以 `1 GiB / 1 CPU` 硬限制完成 `npm ci`、类型检查及两端 `build:demo`，峰值 `623.79 MiB`。两项均退出码 `0`、`OOMKilled=false`，后端复用了本地依赖缓存；专用容器及临时源码、缓存和产物已清理，记录保存在未提交的 `.local/coolify-build/memory-check/`。这些是隔离构建容器的实测值，不包含宿主机其他服务，也不能替代云端 amd64 的构建及常驻容量验收。
