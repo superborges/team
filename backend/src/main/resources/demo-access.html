@@ -30,14 +30,14 @@
   <main>
     <div class="brand"><span class="mark" aria-hidden="true">时</span><span>工时与投入</span></div>
     <h1>访问演示</h1>
-    <p>输入分享者提供的账号与口令，<br>进入后即可选择测试身份体验。</p>
+    <p>输入分享者提供的账号和密码，<br>再选择测试身份，体验系统功能。</p>
     <div class="error" role="alert">{{error}}</div>
     <form method="post" action="/demo-access/login">
       <input type="hidden" name="_csrf" value="{{csrf}}">
       <input type="hidden" name="target" value="{{target}}">
       <label for="username">访问账号</label>
       <input id="username" name="username" value="preview" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="100" required>
-      <label for="password">访问口令</label>
+      <label for="password">访问密码</label>
       <input id="password" name="password" type="password" autocomplete="current-password" maxlength="200" required>
       <button type="submit">进入演示</button>
     </form>

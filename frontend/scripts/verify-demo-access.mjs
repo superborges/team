@@ -40,12 +40,12 @@ for (const item of cases) {
     await expect(page.getByRole('heading', { name: '访问演示' })).toBeVisible();
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     await page.getByLabel('访问账号').fill(config.access_user);
-    await page.getByLabel('访问口令').fill('incorrect-demo-password');
+    await page.getByLabel('访问密码').fill('incorrect-demo-password');
     await page.getByRole('button', { name: '进入演示', exact: true }).click();
     await expect(page.getByRole('alert')).toContainText('不正确');
     assert.equal((await context.request.get(url('/api/v1/auth/status'))).status(), 401);
     const previousCookie = (await context.cookies()).find(cookie => cookie.name === 'WORKLOG_DEMO_SESSION');
-    await page.getByLabel('访问口令').fill(config.access_password);
+    await page.getByLabel('访问密码').fill(config.access_password);
     await page.getByRole('button', { name: '进入演示', exact: true }).click();
     const identity = page.locator(item.target === 'h5' ? '#test-person' : '#employeeNo');
     await expect(identity).toBeVisible({ timeout: 20000 });
@@ -54,7 +54,7 @@ for (const item of cases) {
     assert.notEqual(cookie.value, previousCookie.value, 'Gate login must rotate the session ID');
     if (item.target === 'h5') await identity.selectOption('98123');
     else await identity.fill('98123');
-    await page.getByRole('button', { name: item.target === 'h5' ? '进入我的工时' : '进入工作台', exact: true }).click();
+    await page.getByRole('button', { name: item.target === 'h5' ? '进入我的工时' : '进入系统', exact: true }).click();
     await expect(page.locator(item.target === 'h5' ? '.mobile-header' : '.account')).toContainText('98123', { timeout: 20000 });
     assert.equal((await context.request.get(url('/api/v1/master/users'))).status(), 403);
     assert.equal((await context.request.post(url('/api/v1/auth/logout'))).status(), 403);
@@ -66,7 +66,7 @@ for (const item of cases) {
     assert.equal((await me.json()).code, 'UNAUTHENTICATED');
     assert.equal((await context.request.get(url('/api/v1/auth/status'))).status(), 200, 'Logout keeps gate access only');
     // Re-selecting a business identity must work after logout with a fresh CSRF token.
-    await page.getByRole('button', { name: item.target === 'h5' ? '进入我的工时' : '进入工作台', exact: true }).click();
+    await page.getByRole('button', { name: item.target === 'h5' ? '进入我的工时' : '进入系统', exact: true }).click();
     await expect(page.locator(item.target === 'h5' ? '.mobile-header' : '.account')).toContainText('98123', { timeout: 15000 });
     await context.clearCookies();
     assert.equal((await context.request.get(url('/api/v1/auth/status'))).status(), 401);

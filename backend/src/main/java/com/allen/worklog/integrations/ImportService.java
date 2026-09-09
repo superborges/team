@@ -235,7 +235,7 @@ public class ImportService {
                 LocalDate from=date(d,"effectiveFrom",false);
                 if(from.isAfter(LocalDate.now(ZoneId.of("Asia/Shanghai"))))throw error("FUTURE_MASTER_CHANGE","项目起日必须已经生效");
                 if(jdbc.sql("SELECT COUNT(*) FROM work_item WHERE code=?").param(d.get("code")).query(Integer.class).single()>0)throw error("PROJECT_CODE_CONFLICT","该归集编码已存在，请在维护页明确处理，不通过导入覆盖");
-                if(jdbc.sql("SELECT COUNT(*) FROM work_item WHERE name=? AND type=?").params(d.get("name"),type).query(Integer.class).single()>0)throw error("PROJECT_POSSIBLE_DUPLICATE","存在同名归集对象，请明确关联后再应用，避免重复创建");
+                if(jdbc.sql("SELECT COUNT(*) FROM work_item WHERE name=? AND type=?").params(d.get("name"),type).query(Integer.class).single()>0)throw error("PROJECT_POSSIBLE_DUPLICATE","已有同名项目或事项。请先确认是否为同一项并建立关联，再导入");
                 openPeriod(from,null);
             }
             case RATE -> validateRate(d);

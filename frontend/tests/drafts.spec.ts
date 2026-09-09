@@ -36,12 +36,12 @@ async function server(page: Page, options: { authenticated?: boolean; conflict?:
 test('Admin 本地登录携带 CSRF，冲突保留输入，取消日期切换保留日期', async ({ page }) => {
   const writes = await server(page, { authenticated: false, conflict: true });
   await page.goto('http://127.0.0.1:5175/admin/');
-  await page.getByRole('button', { name: '进入工作台', exact: true }).click();
+  await page.getByRole('button', { name: '进入系统', exact: true }).click();
   await expect(page.getByRole('heading', { name: '我的工时', exact: true })).toBeVisible();
   expect(writes[0]).toEqual({ body: { employeeNo: '98123' }, csrf: 'test-csrf' });
-  await expect(page.getByRole('link', { name: '费率标准' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: '成本标准' })).toHaveCount(0);
   await page.getByRole('button', { name: '添加第一条记录' }).click();
-  await page.getByRole('combobox', { name: '记录 1 归集对象', exact: true }).click();
+  await page.getByRole('combobox', { name: '记录 1 项目或事项', exact: true }).click();
   await page.getByRole('option', { name: '测试项目', exact: true }).click();
   await page.getByLabel('记录 1 小时数', { exact: true }).fill('4');
   await page.getByLabel('记录 1 工作内容', { exact: true }).fill('完成项目现场设备调试与问题复核');
@@ -62,9 +62,9 @@ test('H5 独立现场保存不自动补造工时，手机没有横向溢出', as
   await page.setViewportSize({ width: 390, height: 844 });
   const writes = await server(page);
   await page.goto('http://127.0.0.1:5174/h5/');
-  await page.getByRole('checkbox', { name: '当天在项目现场' }).click();
-  await page.getByLabel('现场归属项目', { exact: true }).selectOption('1');
-  await page.getByRole('textbox', { name: '现场事由' }).fill('设备现场实施，必要驻留');
+  await page.getByRole('checkbox', { name: '当天因项目出差' }).click();
+  await page.getByLabel('现场项目', { exact: true }).selectOption('1');
+  await page.getByRole('textbox', { name: '现场说明' }).fill('设备现场实施，必要驻留');
   await page.getByRole('button', { name: '保存草稿', exact: true }).click();
   await expect(page.getByText(/草稿已保存/)).toBeVisible();
   expect(writes[0].body.entries).toEqual([]);

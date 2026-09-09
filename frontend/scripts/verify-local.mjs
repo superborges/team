@@ -20,7 +20,7 @@ async function login(page, employeeNo, mobile = false) {
   assert.equal(status.mode, 'local'); assert.equal(status.localLoginEnabled, true);
   if (mobile) await page.locator('#test-person').selectOption(employeeNo);
   else await page.locator('#employeeNo').fill(employeeNo);
-  await page.getByRole('button', { name: mobile ? '进入我的工时' : '进入工作台', exact: true }).click();
+  await page.getByRole('button', { name: mobile ? '进入我的工时' : '进入系统', exact: true }).click();
   await expect(page.getByRole('heading', { name: '我的工时', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: '保存草稿', exact: true })).toBeEnabled();
 }
@@ -36,17 +36,17 @@ try {
   if (!initial.entries.length) {
   for (let index = 0; index < 3; index++) {
     await page.getByRole('button', { name: index ? '＋ 添加记录' : '添加第一条记录', exact: true }).click();
-    await page.getByRole('combobox', { name: `记录 ${index + 1} 归集对象`, exact: true }).click();
+    await page.getByRole('combobox', { name: `记录 ${index + 1} 项目或事项`, exact: true }).click();
     const item = catalog.workItems.find(value => value.type === types[index]);
-    const label = item.name + (types[index] === 'IDLE' ? '（待分配）' : '');
-    await page.getByRole('listbox', { name: `记录 ${index + 1} 归集对象`, exact: true }).getByRole('option', { name: label, exact: true }).click();
+    const label = item.name + (types[index] === 'IDLE' ? '（待安排工作）' : '');
+    await page.getByRole('listbox', { name: `记录 ${index + 1} 项目或事项`, exact: true }).getByRole('option', { name: label, exact: true }).click();
     await page.getByLabel(`记录 ${index + 1} 小时数`, { exact: true }).fill(amounts[index]);
     if (index < 2) await page.getByRole('textbox', { name: `记录 ${index + 1} 工作内容`, exact: true }).fill(index ? '本地界面验证：整理部门协作与项目问题清单' : '本地界面验证：完成现场设备调试与问题复核');
   }
-  await page.getByText('当天在项目现场（含交通与必要驻留）', { exact: true }).click();
-  await page.getByText('选择现场归属项目', { exact: true }).click();
-  await page.getByRole('listbox', { name: '现场归属项目', exact: true }).getByRole('option', { name: catalog.workItems.find(value => value.type === 'PROJECT').name, exact: true }).click();
-  await page.getByRole('textbox', { name: '现场事由', exact: true }).fill('本地界面验证：项目现场设备联调');
+  await page.getByText('当天因项目出差（含交通和必要停留）', { exact: true }).click();
+  await page.getByText('选择现场项目', { exact: true }).click();
+  await page.getByRole('listbox', { name: '现场项目', exact: true }).getByRole('option', { name: catalog.workItems.find(value => value.type === 'PROJECT').name, exact: true }).click();
+  await page.getByRole('textbox', { name: '现场说明', exact: true }).fill('本地界面验证：项目现场设备联调');
   await page.getByRole('button', { name: '保存草稿', exact: true }).click();
   await expect(page.getByText(/草稿已保存/)).toBeVisible();
   }
@@ -60,8 +60,8 @@ try {
   const mobile = await mobileContext.newPage();
   await login(mobile, '98123', true);
   await expect(mobile.getByText('实际工作 5h', { exact: true })).toBeVisible();
-  await mobile.getByRole('checkbox', { name: '当天在项目现场', exact: true }).click();
-  await mobile.getByRole('checkbox', { name: '当天在项目现场', exact: true }).click();
+  await mobile.getByRole('checkbox', { name: '当天因项目出差', exact: true }).click();
+  await mobile.getByRole('checkbox', { name: '当天因项目出差', exact: true }).click();
   let releaseResponse;
   const responseGate = new Promise(resolve => { releaseResponse = resolve; });
   await mobile.route(`**/days/${today}`, async route => {
@@ -88,7 +88,7 @@ try {
   await login(admin, '00123');
   await admin.getByRole('link', { name: '人员与组织', exact: true }).click();
   await expect(admin.getByRole('heading', { name: '人员与组织' })).toBeVisible();
-  await admin.getByRole('button', { name: '组织部门', exact: true }).click();
+  await admin.getByRole('button', { name: '部门', exact: true }).click();
   await admin.getByRole('button', { name: '新增部门', exact: true }).click();
   await admin.locator('#master-code').fill(`UI-${suffix}`);
   await admin.locator('#master-name').fill(`本地界面验证部门${suffix}`);
@@ -100,21 +100,22 @@ try {
   await admin.locator('#master-name').fill(`本地界面验证部门${suffix}已调整`);
   await admin.getByRole('button', { name: '保存部门', exact: true }).click();
   await expect(admin.getByText(`本地界面验证部门${suffix}已调整`, { exact: true })).toBeVisible();
-  await admin.getByRole('link', { name: '归集对象', exact: true }).click();
-  await expect(admin.getByRole('heading', { name: '归集对象', exact: true })).toBeVisible();
-  await admin.getByRole('button', { name: '新增归集对象', exact: true }).click();
+  await admin.getByRole('link', { name: '项目与事项', exact: true }).click();
+  await expect(admin.getByRole('heading', { name: '项目与事项', exact: true })).toBeVisible();
+  await admin.getByRole('button', { name: '新增项目或事项', exact: true }).click();
   await admin.locator('#master-code').fill(`UI-P-${suffix}`);
   await admin.locator('#master-name').fill(`本地界面验证项目${suffix}`);
   await admin.getByRole('combobox', { name: '主责部门', exact: true }).click();
   await admin.getByRole('option', { name: '测试交付部', exact: true }).click();
-  await admin.getByRole('button', { name: '保存归集对象', exact: true }).click();
-  await expect(admin.getByText('归集对象已保存。', { exact: true })).toBeVisible();
-  await admin.getByRole('link', { name: '费率标准', exact: true }).click();
-  await expect(admin.getByRole('heading', { name: '费率标准', exact: true })).toBeVisible();
-  await expect(admin.getByRole('button', { name: '新增生效版本', exact: true })).toBeEnabled();
+  await admin.getByRole('button', { name: '保存项目或事项', exact: true }).click();
+  await expect(admin.getByText('项目或事项已保存。', { exact: true })).toBeVisible();
+  await admin.getByRole('link', { name: '成本标准', exact: true }).click();
+  await expect(admin.getByRole('heading', { name: '成本标准', exact: true })).toBeVisible();
+  await expect(admin.getByRole('button', { name: '新增标准版本', exact: true })).toBeEnabled();
   await expect(admin.getByText('初级', { exact: true }).first()).toBeVisible();
   await admin.screenshot({ path: 'local-verification/real-admin-rates.png', fullPage: true });
-  await admin.getByRole('link', { name: '工作日历', exact: true }).click();
+  await admin.getByRole('link', { name: '系统设置', exact: true }).click();
+  await admin.getByRole('button', { name: '工作日历', exact: true }).click();
   await expect(admin.getByRole('heading', { name: '工作日历', exact: true })).toBeVisible();
   await expect(admin.getByRole('button', { name: '调整', exact: true }).first()).toBeVisible();
   evidence.results.push('Admin department create/update, local work item create, rate/calendar reads use real APIs');

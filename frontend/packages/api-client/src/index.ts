@@ -125,13 +125,13 @@ export function addDays(date: string, amount: number) {
 export function monday(date: string) { const day = new Date(`${date}T12:00:00Z`).getUTCDay(); return addDays(date, -(day || 7) + 1); }
 export const freshEntry = (): EntryInput => ({ id: null, workItemId: '', kind: 'WORK', hours: '1', content: '', redReason: '' });
 export const entryInput = (entry: EntryInput): EntryInput => ({ ...(entry.correctionRequestId ? { correctionRequestId: entry.correctionRequestId } : {}), id: entry.id, workItemId: entry.workItemId, kind: entry.kind, hours: entry.hours, content: entry.content, redReason: entry.redReason });
-export const stateLabel = (day: Day) => !day.enrolled ? '无需填报' : day.entries.length === 0 && !day.onsite ? (day.requiredMinutes ? '未填写' : '休息日') : day.validation.ready ? '填写完整' : '待完善';
-export const statusLabel = (value: string) => ({ DRAFT: '草稿', PENDING: '待审批', APPROVED: '已通过', LOCKED: '已锁定', REJECTED: '已驳回', CANCELED: '已取消', REQUESTED: '待核实', DECLINED: '未同意', OPEN: '协调中', ESCALATED: '裁定中', RESOLVED: '已解决', CONFIRM_FACTS: '确认事实', NEEDS_CORRECTION: '需要更正', EDIT: '更正', CANCEL: '取消申报' })[value as 'DRAFT'] ?? value;
+export const stateLabel = (day: Day) => !day.enrolled ? '无需填报' : day.entries.length === 0 && !day.onsite ? (day.requiredMinutes ? '未填写' : '休息日') : day.validation.ready ? '填报完整' : '待完善';
+export const statusLabel = (value: string) => ({ DRAFT: '草稿', PENDING: '待审批', APPROVED: '已通过', LOCKED: '已锁定', REJECTED: '已驳回', CANCELED: '已取消', REQUESTED: '待核实', DECLINED: '未通过', OPEN: '协调中', ESCALATED: '上级处理中', RESOLVED: '已解决', CONFIRM_FACTS: '记录属实', NEEDS_CORRECTION: '需要更正', EDIT: '更正', CANCEL: '取消申报' })[value as 'DRAFT'] ?? value;
 export function reviewProgress(day: Day) {
   const records = [...day.entries, ...(day.onsite ? [day.onsite] : [])];
   const pending = records.filter(row => row.state === 'PENDING').length; const rejected = records.filter(row => row.state === 'REJECTED').length;
   const approved = records.filter(row => ['APPROVED', 'LOCKED'].includes(row.state)).length;
-  if (rejected) return `${rejected} 项待修改`; if (pending) return `${pending} 项待审批`; if (approved) return `已确认 ${approved}/${records.length} 项`; return records.length ? '尚未送审' : '';
+  if (rejected) return `${rejected} 项待修改`; if (pending) return `${pending} 项待审批`; if (approved) return `已确认 ${approved}/${records.length} 项`; return records.length ? '尚未提交审批' : '';
 }
 export const displayTime = (value: string | null | undefined) => { if(!value)return '暂无'; const stamp=/[zZ]$|[+-]\d{2}:?\d{2}$/.test(value)?value:value.replace(' ','T')+'Z';return new Date(stamp).toLocaleString('zh-CN', { timeZone:'Asia/Shanghai',hour12:false }); };
 export function downloadFile(blob: Blob, name: string) { const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = name; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }

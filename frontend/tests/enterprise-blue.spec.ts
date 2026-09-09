@@ -35,7 +35,7 @@ async function serve(page: Page, readDay: () => Day) {
     if (path === '/catalog') return route.fulfill({ json: { workItems: items, departments: [] } });
     if (path.startsWith('/days/')) return route.fulfill({ json: { ...readDay(), date: path.split('/').pop() } });
     if (path.endsWith('/preview')) return route.fulfill({ json: { weekStart: monday(date), days: [{ date, workReady: false, onsiteReady: true, errors: ['当日工时尚未完整'], warnings: [], workItems: [], onsite: { workItemName: items[0]!.name, approverName: '项目负责人' } }] } });
-    if (path.endsWith('/submit')) return route.fulfill({ json: { succeeded: [{ id: '1', kind: 'ONSITE', date, message: '现场日已送审' }], failed: [], unchanged: [] } });
+    if (path.endsWith('/submit')) return route.fulfill({ json: { succeeded: [{ id: '1', kind: 'ONSITE', date, message: '现场日已提交审批' }], failed: [], unchanged: [] } });
     if (path.startsWith('/weeks/')) return route.fulfill({ json: { weekStart: monday(date), days: Array.from({ length: 7 }, (_, i) => ({ ...readDay(), date: addDays(monday(date), i) })) } });
     return route.fulfill({ json: [] });
   });
@@ -54,13 +54,13 @@ for (const app of apps) {
       await expect(page.locator(`[data-summary="${name}"]`)).toContainText(new RegExp(`${value}\\s*h`));
     }
     await expect(page.locator(app.name === 'H5' ? '.summary-caption' : '.summary-note')).toContainText(/实际工作\s*5\s*h/);
-    await expect(page.getByRole('button', { name: '预览本周送审', exact: true })).toHaveCSS('background-color', 'rgb(22, 100, 255)');
-    await expect(page.getByRole('link', { name: '费率标准' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: '预览本周记录', exact: true })).toHaveCSS('background-color', 'rgb(22, 100, 255)');
+    await expect(page.getByRole('link', { name: '成本标准' })).toHaveCount(0);
     for (const width of [320, 375, 390, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: 950 });
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${app.name} width ${width}`).toBe(true);
       await expect(page.getByRole('button', { name: '保存草稿', exact: true })).toBeVisible();
-      await expect(page.getByRole('button', { name: '预览本周送审', exact: true })).toBeVisible();
+      await expect(page.getByRole('button', { name: '预览本周记录', exact: true })).toBeVisible();
       expect(await page.locator('[aria-label="自然周概览"] button[aria-pressed]').count()).toBe(7);
     }
   });
@@ -69,15 +69,15 @@ for (const app of apps) {
     await page.setViewportSize({ width: 390, height: 844 });
     const writes = await serve(page, () => sampleDay({ entries: [], totalMinutes: 0, actualMinutes: 0, idleMinutes: 0, requiredMinutes: 480, leaveMinutes: 0, validation: { ready: false, errors: ['工时不足'], warnings: [] } }));
     await page.goto(`${app.url}?date=${date}`);
-    const onsiteButton = page.locator(app.onsite).getByRole('button', { name: '仅提交当日现场', exact: true });
+    const onsiteButton = page.locator(app.onsite).getByRole('button', { name: '仅提交当天现场日', exact: true });
     await expect(onsiteButton).toBeEnabled();
-    await page.getByRole('button', { name: '预览本周送审', exact: true }).click();
-    const preview = page.getByRole('dialog', { name: '本周送审预览' });
+    await page.getByRole('button', { name: '预览本周记录', exact: true }).click();
+    const preview = page.getByRole('dialog', { name: '本周提交预览' });
     await expect(preview).toContainText('2026-08-31');
     await preview.getByRole('button', { name: '关闭', exact: true }).click();
     page.once('dialog', dialog => dialog.accept());
     await onsiteButton.click();
-    await expect(page.getByRole('dialog', { name: '本周送审预览' })).toContainText('现场日已送审');
+    await expect(page.getByRole('dialog', { name: '本周提交预览' })).toContainText('现场日已提交审批');
     expect(writes.filter(path => path.endsWith('/submit'))).toEqual(['/onsite-days/1/submit']);
     expect(writes).toContain('/weeks/2026-08-31/preview');
   });
@@ -89,7 +89,7 @@ test('H5 企业蓝：零基数与封账待审批分别呈现，已处理条目�
   day.entries = day.entries.map((entry, i) => ({ ...entry, state: ['PENDING', 'APPROVED', 'REJECTED'][i]!, editable: false }));
   await serve(page, () => day);
   await page.goto(`${apps[0]!.url}?date=${date}`);
-  await expect(page.getByText('当日无最低填报要求', { exact: false })).toBeVisible();
+  await expect(page.getByText('当天没有最低工时要求', { exact: false })).toBeVisible();
   await expect(page.getByText('月份已封账', { exact: false })).toBeVisible();
   for (const label of ['待审批', '已通过', '已驳回']) await expect(page.locator('.mobile-entry').getByText(label, { exact: true })).toBeVisible();
   await expect(page.getByRole('textbox', { name: '记录 1 工作内容', exact: true })).toBeDisabled();
@@ -111,7 +111,7 @@ test('H5 操作栏：加载不显示零值，输入失焦后可保存，失败�
     return route.fulfill({ json: sampleDay({ version: 2, entries: sampleDay().entries.map((entry, i) => ({ ...entry, ...body.entries[i] })) }) });
   });
   await page.goto(`${apps[0]!.url}?date=${date}`);
-  await expect(page.getByRole('status').filter({ hasText: '正在读取日记录' })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: '正在加载当天记录' })).toBeVisible();
   await expect(page.locator('[data-summary="explained"]')).toHaveCount(0);
   release();
   const content = page.getByRole('textbox', { name: '记录 1 工作内容', exact: true });

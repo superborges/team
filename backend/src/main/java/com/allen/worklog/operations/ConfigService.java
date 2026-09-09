@@ -30,7 +30,7 @@ public class ConfigService {
     public Map<String,Object> preview(Update input) {
         current.requireAdmin();validate(input);
         int days=jdbc.sql("SELECT COUNT(*) FROM day_record WHERE work_date>=?").param(input.effectiveFrom()).query(Integer.class).single();
-        return Map.of("effectiveFrom",input.effectiveFrom(),"existingFutureDays",days,"notes",List.of("新参数从指定日期适用；已发布月报和既有提交截止不改变","显式维护的日历优先于默认工作日基数","已建立月份的预定封账时间保持不变；新月份使用其首日参数"));
+        return Map.of("effectiveFrom",input.effectiveFrom(),"existingFutureDays",days,"notes",List.of("新设置从所选日期起生效，不改变已发布月报和已有记录的提交截止时间","单独设置过的日历日期，使用该日期的应填工时；其他工作日使用默认值","已有月份的封账时间不变；新月份按当月第一天生效的设置确定封账时间"));
     }
     @Transactional public Snapshot save(Update input) {
         var actor=current.requireAdmin();validate(input);
@@ -38,7 +38,7 @@ public class ConfigService {
         var latest=jdbc.sql("SELECT CAST(id AS CHAR) FROM system_config_version ORDER BY id DESC LIMIT 1 FOR UPDATE").query(String.class).optional().orElse("0");
         if(!Objects.equals(input.expectedVersion(),latest))throw new ApiException(409,"CONFIG_CHANGED","参数版本已变化，请重新读取并预览");
         if(jdbc.sql("SELECT COUNT(*) FROM system_config_version WHERE effective_from>=?").param(input.effectiveFrom()).query(Integer.class).single()>0)
-            throw new ApiException(422,"CONFIG_ORDER","新版本起日须晚于已有所有版本，不能覆盖历史或已排定版本");
+            throw new ApiException(422,"CONFIG_ORDER","生效日期须晚于所有已有版本，不能覆盖历史或已安排的设置");
         var snapshot=new Snapshot("0",input.effectiveFrom(),input.params(),List.copyOf(input.rules()));
         jdbc.sql("INSERT INTO system_config_version(effective_from,config_json,created_by,reason) VALUES(?,?,?,?)")
             .params(input.effectiveFrom(),json.writeValueAsString(snapshot),actor.id(),input.reason().strip()).update();
@@ -54,7 +54,7 @@ public class ConfigService {
         if(input==null||input.params()==null||input.rules()==null||input.effectiveFrom()==null||!input.effectiveFrom().isAfter(today())||input.effectiveFrom().isAfter(today().plusYears(2)))throw bad("请指定明天至两年内的生效日期");
         if(input.reason()==null||input.reason().isBlank()||input.reason().length()>500)throw bad("请填写不超过500字的调整原因");
         var p=input.params();
-        if(!Set.of(15,30,60).contains(p.stepMinutes())||p.dayLimitMinutes()<480||p.dayLimitMinutes()>1440||p.dayLimitMinutes()%p.stepMinutes()!=0||p.redFlagMinutes()<480||p.redFlagMinutes()>p.dayLimitMinutes()||p.defaultDayMinutes()<0||p.defaultDayMinutes()>480||p.defaultDayMinutes()%p.stepMinutes()!=0||p.submitWeekday()<1||p.submitWeekday()>7||p.approveWeekday()<p.submitWeekday()||p.approveWeekday()>7||p.closeDay()<1||p.closeDay()>28)throw bad("分钟、步长、周截止或封账日超出允许范围");
+        if(!Set.of(15,30,60).contains(p.stepMinutes())||p.dayLimitMinutes()<480||p.dayLimitMinutes()>1440||p.dayLimitMinutes()%p.stepMinutes()!=0||p.redFlagMinutes()<480||p.redFlagMinutes()>p.dayLimitMinutes()||p.defaultDayMinutes()<0||p.defaultDayMinutes()>480||p.defaultDayMinutes()%p.stepMinutes()!=0||p.submitWeekday()<1||p.submitWeekday()>7||p.approveWeekday()<p.submitWeekday()||p.approveWeekday()>7||p.closeDay()<1||p.closeDay()>28)throw bad("工时时长、填写间隔、每周截止时间或封账日期不符合要求，请检查设置");
         time(p.submitTime());time(p.approveTime());time(p.dailyCompletionTime());
         if(p.approveWeekday()==p.submitWeekday()&&!LocalTime.parse(p.approveTime()).isAfter(LocalTime.parse(p.submitTime())))throw bad("同一天的审批截止须晚于提交截止");
         Set<String> codes=new HashSet<>();
@@ -77,7 +77,7 @@ public class ConfigService {
             rule("DAILY_MISSING","当日未填","17:30","WORKDAY",1,"SELF"),rule("PREVIOUS_MISSING","前日补填","10:00","DAILY",1,"SELF"),
             rule("CONSECUTIVE_MISSING","连续未填","10:00","WORKDAY",3,"SELF_MANAGER"),rule("WEEK_MISSING","上周未提交","10:00","WEEKLY",1,"SELF"),
             rule("AUTO_SUBMIT","截止自动提交","12:00","WEEKLY",1,"SELF"),rule("APPROVAL_PENDING","审批待办","14:00","WEEKLY",1,"APPROVER"),
-            new Rule("APPROVAL_DUE","审批临期",true,"15:00","WEEKLY",3,1,1,"APPROVER","{name}：仍有{count}项待处理，请及时核实。"),
+            new Rule("APPROVAL_DUE","审批即将到期",true,"15:00","WEEKLY",3,1,1,"APPROVER","{name}：仍有{count}项待处理，请及时核实。"),
             new Rule("APPROVAL_OVERDUE","审批超时",true,"09:00","WEEKLY",4,1,1,"APPROVER_SUPERVISOR","{name}：有{count}项审批已超时，请处理。"),
             rule("REJECTED","驳回通知","00:00","EVENT",1,"SELF"),new Rule("MONTH_CLOSE","月度封账",true,"00:00","MONTHLY",1,10,1,"ADMIN","{date}月度封账结果已更新。")));
     }

@@ -40,7 +40,7 @@ public class ApprovalService {
                     try {previewGate(r);onsiteValid(r);route=d.routeForSubmission(user,week,r.item());onsiteReady=true;}catch(ApiException e){errors.add("现场日："+e.getMessage());}
                     onsite=new PreviewOnsite(str(r.id()),str(r.recordId()),str(r.item()),r.itemName(),route==null?null:str(route.approver()),route==null?null:d.name(route.approver()),route==null?null:route.reason());
                 }
-                if(date.isAfter(d.config.today())&&(workReady||onsiteReady)){workReady=false;onsiteReady=false;errors.add("尚未发生的日期不能送审");}
+                if(date.isAfter(d.config.today())&&(workReady||onsiteReady)){workReady=false;onsiteReady=false;errors.add("不能提交未来日期的记录");}
             } catch(ApiException e){errors.add(e.getMessage());}
             result.add(new PreviewDay(date,workReady,onsiteReady,List.copyOf(errors),List.copyOf(warnings),List.copyOf(work),onsite));
         }
@@ -71,7 +71,7 @@ public class ApprovalService {
             var previous=d.receipt(command,key,body,BatchResult.class);
             return previous==null?new BatchResult(List.of(),List.of(),List.of()):previous;
         }
-        if(date.isAfter(d.config.today()))throw bad("DAY_NOT_OCCURRED","尚未发生的日期不能送审");
+        if(date.isAfter(d.config.today()))throw bad("DAY_NOT_OCCURRED","不能提交未来日期的记录");
         d.lockDays(original,"SUBMIT");
         var previous=d.receipt(command,key,body,BatchResult.class);if(previous!=null)return previous;
         var eligible=d.dayRevisions(user,date,kind).stream().filter(this::unsubmitted).toList();var result=new MutableResult();
@@ -80,7 +80,7 @@ public class ApprovalService {
             if(!validation.ready()) {
                 var cancellations=eligible.stream().filter(r->r.action().equals("CANCEL")).toList();
                 if(cancellations.isEmpty())throw bad("DAY_INCOMPLETE",String.join("；",validation.errors()));
-                result.failed.add(new ResultItem(null,"DAY",date,null,"DAY_INCOMPLETE","取消更正独立送审；其他工时仍需补齐："+String.join("；",validation.errors())));
+                result.failed.add(new ResultItem(null,"DAY",date,null,"DAY_INCOMPLETE","取消记录可单独提交审批；其他工时仍需补齐："+String.join("；",validation.errors())));
                 eligible=cancellations;
             }
         }
@@ -102,8 +102,8 @@ public class ApprovalService {
                 .params(r.ownerDepartment(),r.id()).update();
             d.touch(r);d.touchPack(pack);
             d.audit(user,"REVISION_SUBMITTED",kind,r.id(),initial,map("approvalItemId",str(item),"packageId",str(pack)),"按自然周送审当前内容版本");
-            d.notifications.enqueue(d.pack(pack,false).approver(),pack,"APPROVAL_PENDING","approval_item_"+item,"你有新的工时或现场日待核实","/h5/approvals/"+pack);
-            result.succeeded.add(new ResultItem(str(item),kind,date,str(pack),null,"已送审"));
+            d.notifications.enqueue(d.pack(pack,false).approver(),pack,"APPROVAL_PENDING","approval_item_"+item,"你有新的工时或现场日记录待审批","/h5/approvals/"+pack);
+            result.succeeded.add(new ResultItem(str(item),kind,date,str(pack),null,"已提交审批"));
         }
         BatchResult value=result.value();d.saveReceipt(command,key,body,value);return value;
     }
@@ -133,12 +133,12 @@ public class ApprovalService {
     private boolean unsubmitted(Revision r){return Set.of("DRAFT","REJECTED").contains(r.state());}
     private void previewGate(Revision r){
         if(!d.periods.status(r.date()).equals("OPEN")&&!d.periods.scope(r.date(),r.user(),r.item(),r.kind(),r.recordId(),"SUBMIT"))
-            throw new ApiException(409,"PERIOD_CLOSED","该月份已截止或封账，当前记录没有有效送审授权");
+            throw new ApiException(409,"PERIOD_CLOSED","该月份已截止或封账，请先申请解锁并取得这条记录的提交权限");
         if(r.disputeOpen())throw bad("DISPUTE_OPEN","当前记录正在争议处理中，请先完成协调");
     }
-    private void onsiteValid(Revision r){if(!r.itemType().equals("PROJECT"))throw bad("ONSITE_PROJECT_REQUIRED","现场日须归属项目");required(r.content(),500,"现场驻留或出差事由");}
+    private void onsiteValid(Revision r){if(!r.itemType().equals("PROJECT"))throw bad("ONSITE_PROJECT_REQUIRED","现场日须归属项目");required(r.content(),500,"现场说明");}
     static LocalDateTime deadline(LocalDate week,int weekday,String time){return week.plusWeeks(1).plusDays(weekday-1).atTime(LocalTime.parse(time)).atZone(ZoneId.of("Asia/Shanghai")).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();}
-    private static void monday(LocalDate week){if(week==null||week.getDayOfWeek()!=DayOfWeek.MONDAY)throw bad("INVALID_WEEK","请选择周一作为自然周起日");}
+    private static void monday(LocalDate week){if(week==null||week.getDayOfWeek()!=DayOfWeek.MONDAY)throw bad("INVALID_WEEK","请选择周一，提交范围为该周周一至周日");}
 
     public List<Map<String,Object>> list(String view,LocalDate week) {
         var actor=d.current.require();if(view==null)view="pending";
@@ -200,7 +200,7 @@ public class ApprovalService {
     }
 
     public BatchResult decide(long packageId,Decide input,String key) {
-        key(key);if(input==null||input.expectedVersion()==null||input.itemIds()==null||input.itemIds().isEmpty()||input.itemIds().size()>200)throw bad("INVALID_SELECTION","请选择本包最多 200 项并提供包版本");
+        key(key);if(input==null||input.expectedVersion()==null||input.itemIds()==null||input.itemIds().isEmpty()||input.itemIds().size()>200)throw bad("INVALID_SELECTION","请刷新审批单后选择记录，一次最多处理 200 条");
         if(!Set.of("APPROVE","REJECT").contains(input.decision()==null?"":input.decision()))throw bad("INVALID_DECISION","仅支持通过或驳回");
         if(input.decision().equals("REJECT"))required(input.reason(),1000,"驳回原因");
         if(new HashSet<>(input.itemIds()).size()!=input.itemIds().size())throw bad("INVALID_SELECTION","审批项不能重复选择");
@@ -209,7 +209,7 @@ public class ApprovalService {
             if(initial.approver()!=actor.id()||initial.user()==actor.id())throw forbidden("只可处理当前指派给本人且非本人填报的审批项");
             String command="DECIDE:"+packageId;var previous=d.receipt(command,key,input,BatchResult.class);if(previous!=null)return previous;
             var requested=input.itemIds().stream().map(ApprovalData::id).sorted().map(id->d.item(id,false)).toList();
-            for(var item:requested)if(item.packageId()!=packageId)throw forbidden("所选审批项不属于当前包");
+            for(var item:requested)if(item.packageId()!=packageId)throw forbidden("所选记录不属于当前审批单");
             var result=new MutableResult();var eligible=new ArrayList<Item>();
             for(var item:requested) {
                 try {if(!item.status().equals("PENDING")){result.unchanged.add(resultItem(item,null,"该项已处理"));continue;}
@@ -221,7 +221,7 @@ public class ApprovalService {
             d.lockDays(eligible.stream().map(Item::rev).toList(),input.decision());
             var pack=d.pack(packageId,true);actor=d.current.require();
             if(pack.approver()!=actor.id()||pack.user()==actor.id())throw forbidden("接收人已变化或存在本人审批");
-            if(pack.version()!=input.expectedVersion())throw new ApiException(409,"VERSION_CONFLICT","审批包已变化，请刷新后核对");
+            if(pack.version()!=input.expectedVersion())throw new ApiException(409,"VERSION_CONFLICT","审批单已变化，请刷新后核对");
             Map<Long,Pricing> prices=new HashMap<>();var process=new ArrayList<Item>();
             for(var candidate:eligible) {
                 var item=d.item(candidate.id(),true);
@@ -237,7 +237,7 @@ public class ApprovalService {
                 d.jdbc.sql("UPDATE approval_item SET status=?,handled_by=?,handled_at=UTC_TIMESTAMP(6),reason=? WHERE id=? AND status='PENDING'")
                     .params(state,actor.id(),input.reason()==null?"":input.reason().strip(),item.id()).update();
                 d.touch(r);d.audit(actor.id(),"APPROVAL_"+state,"APPROVAL_ITEM",item.id(),item,map("state",state,"cost",prices.get(item.id())),input.reason());
-                if(state.equals("REJECTED"))d.notifications.enqueue(r.user(),null,"REJECTED","rejected_"+item.id(),"有工时或现场日已退回，请查看原因并核实","/h5/work?date="+r.date());
+                if(state.equals("REJECTED"))d.notifications.enqueue(r.user(),null,"REJECTED","rejected_"+item.id(),"你的工时或现场日记录已退回，请查看原因并修改","/h5/work?date="+r.date());
                 result.succeeded.add(resultItem(item,null,state.equals("APPROVED")?"已通过":"已驳回"));
             }
             if(!process.isEmpty())d.touchPack(packageId);var value=result.value();d.saveReceipt(command,key,input,value);return value;
@@ -261,7 +261,7 @@ public class ApprovalService {
             String command="TRANSFER:"+packageId;Map previous=d.receipt(command,key,input,Map.class);if(previous!=null)return previous;
             var pending=d.items(packageId).stream().filter(i->i.status().equals("PENDING")).toList();if(pending.isEmpty())throw bad("NO_PENDING_ITEMS","没有可转交的未处理项");
             d.lockDays(pending.stream().map(Item::rev).toList(),"TRANSFER");d.lockActor(actor);d.current.requireAdmin();var pack=d.pack(packageId,true);
-            if(input.expectedVersion()==null||pack.version()!=input.expectedVersion())throw new ApiException(409,"VERSION_CONFLICT","审批包已变化，请刷新后转交");
+            if(input.expectedVersion()==null||pack.version()!=input.expectedVersion())throw new ApiException(409,"VERSION_CONFLICT","审批单已变化，请刷新后转交");
             for(var i:pending)d.item(i.id(),true);
             d.jdbc.sql("INSERT INTO approval_transfer(package_id,old_approver_id,new_approver_id,item_ids,basis,reason,created_by) VALUES(?,?,?,?,?,?,?)")
                 .params(packageId,pack.approver(),next,d.json.writeValueAsString(pending.stream().map(i->str(i.id())).toList()),input.basis(),input.reason(),actor).update();
@@ -269,7 +269,7 @@ public class ApprovalService {
                 .params(next,"业务指定转交："+input.reason(),packageId).update();
             for(var i:pending)d.touch(i.rev());
             d.audit(actor,"APPROVAL_TRANSFERRED","APPROVAL_PACKAGE",packageId,pack,map("newApproverId",str(next),"basis",input.basis(),"items",pending.stream().map(Item::id).toList()),input.reason());
-            d.notifications.enqueue(next,packageId,"APPROVAL_PENDING","transfer_"+transfer,"有审批待办已按业务指定转交给你","/h5/approvals/"+packageId);
+            d.notifications.enqueue(next,packageId,"APPROVAL_PENDING","transfer_"+transfer,"有待审批记录转交给你，请查看","/h5/approvals/"+packageId);
             var result=detail(packageId);d.saveReceipt(command,key,input,result);return result;
         });
     }

@@ -79,7 +79,7 @@ public class DayService {
             if(entry==null)throw new ApiException(400,"INVALID_REQUEST","工时记录不能空缺");
             int minutes=DayRules.minutes(entry.hours(),parameters.stepMinutes(),parameters.dayLimitMinutes());total+=minutes;
             String kind=Objects.requireNonNullElse(entry.kind(),"");
-            if(!Set.of("WORK","TRAVEL","IDLE").contains(kind))throw new ApiException(422,"INVALID_KIND","请选择工作、交通或待分配");
+            if(!Set.of("WORK","TRAVEL","IDLE").contains(kind))throw new ApiException(422,"INVALID_KIND","请选择实际工作、项目交通或待安排工作");
             String content=Objects.requireNonNullElse(entry.content(),"").strip();
             String reason=Objects.requireNonNullElse(entry.redReason(),"").strip();
             if(kind.equals("IDLE") && content.isEmpty())content="暂无任务安排";
@@ -94,7 +94,7 @@ public class DayService {
                 if(entry.correctionRequestId()!=null&&!Objects.equals(entry.correctionRequestId(),old.correctionRequestId()))throw new ApiException(422,"CORRECTION_LINK_IMMUTABLE","已有记录的更正关联不能修改");
                 boolean equal=old.workItemId().equals(entry.workItemId())&&old.kind().equals(kind)&&old.minutes()==minutes
                     &&old.content().equals(content)&&old.redReason().equals(reason);
-                if(!old.editable()&&!equal)throw new ApiException(409,"IMMUTABLE_ENTRY","已送审记录须通过退回或更正流程修改");
+                if(!old.editable()&&!equal)throw new ApiException(409,"IMMUTABLE_ENTRY","已提交审批的记录不能直接修改，请退回后修改或申请更正");
                 if(equal)continue;
                 entryId=DayRules.id(entry.id());
                 gate.lockForAction(date,user,DayRules.id(old.workItemId()),"TIME",entryId,"SAVE");
@@ -105,15 +105,15 @@ public class DayService {
             }
             Item selected=validItem(item);
             if(kind.equals("IDLE")!=selected.type().equals("IDLE") || (kind.equals("TRAVEL")&&!selected.type().equals("PROJECT")))
-                throw new ApiException(422,"ITEM_KIND_MISMATCH","待分配须选择待分配对象，交通须归集到项目");
+                throw new ApiException(422,"ITEM_KIND_MISMATCH","待安排工作请选择对应部门的待安排事项；项目交通请选择所属项目");
             if(kind.equals("IDLE")&&jdbc.sql("SELECT COUNT(*) FROM work_item WHERE id=? AND owner_department_id=?").params(item,base.departmentId()).query(Integer.class).single()==0)
-                throw new ApiException(422,"IDLE_DEPARTMENT","待分配须选择发生日所属部门的预置对象");
+                throw new ApiException(422,"IDLE_DEPARTMENT","待安排工作请选择工作当天所属部门的待安排事项");
             Long relocation=entry.id()==null?relocation(entry.correctionRequestId(),user,date,"TIME"):null;
             revision(entryId,item,kind,minutes,content,reason,base.departmentId(),"REPORT",relocation);
         }
-        if(total>parameters.dayLimitMinutes())throw new ApiException(422,"DAY_LIMIT","单日工时与待分配合计不能超过 "+DayRules.hours(parameters.dayLimitMinutes())+" 小时");
+        if(total>parameters.dayLimitMinutes())throw new ApiException(422,"DAY_LIMIT","当天工作与待安排时间合计不能超过 "+DayRules.hours(parameters.dayLimitMinutes())+" 小时");
         for(Entry old:existing.values())if(!seen.contains(old.id())) {
-            if(!old.editable())throw new ApiException(409,"IMMUTABLE_ENTRY","不能移除已送审记录，请保留并走更正流程");
+            if(!old.editable())throw new ApiException(409,"IMMUTABLE_ENTRY","已提交审批的记录不能直接移除，请申请更正或取消");
             if(old.correctionRequestId()!=null)throw new ApiException(409,"CORRECTION_CANCEL_REQUIRES_APPROVAL","更正版本不能直接删除，请通过取消更正申请处理");
             gate.lockForAction(date,user,DayRules.id(old.workItemId()),"TIME",DayRules.id(old.id()),"SAVE");
             revision(DayRules.id(old.id()),DayRules.id(old.workItemId()),old.kind(),old.minutes(),old.content(),old.redReason(),base.departmentId(),"CANCEL",null);
@@ -157,7 +157,7 @@ public class DayService {
         String reason,action;
         Long id;
         if(input==null) {
-            if(!old.editable())throw new ApiException(409,"IMMUTABLE_ONSITE","已送审现场日须通过退回或更正流程取消");
+            if(!old.editable())throw new ApiException(409,"IMMUTABLE_ONSITE","已提交审批的现场日不能直接取消，请退回后处理或申请取消");
             if(old.correctionRequestId()!=null)throw new ApiException(409,"CORRECTION_CANCEL_REQUIRES_APPROVAL","现场更正版本不能直接删除，需重新申请取消");
             id=DayRules.id(old.id());item=DayRules.id(old.workItemId());reason=old.reason();action="CANCEL";
         } else {
@@ -268,7 +268,7 @@ public class DayService {
     private Item validItem(long id) {
         return jdbc.sql("SELECT type FROM work_item WHERE id=:id AND status='ACTIVE' FOR SHARE").param("id",id)
             .query((rs,n)->new Item(rs.getString("type"))).optional()
-            .orElseThrow(()->new ApiException(422,"INVALID_WORK_ITEM","归集对象不存在或已停用，请重新选择"));
+            .orElseThrow(()->new ApiException(422,"INVALID_WORK_ITEM","所选项目或事项不存在或已停用，请重新选择"));
     }
     private Long relocation(String requestId,long user,LocalDate date,String kind) {
         if(requestId==null)return null;long id=DayRules.id(requestId);

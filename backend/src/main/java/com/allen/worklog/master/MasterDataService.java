@@ -304,7 +304,7 @@ public class MasterDataService {
         Long approver=optionalId(input.approverUserId(),"默认审批人");
         LocalDate from=currentEffectiveDate(input.effectiveFrom());
         WorkItemView initial=itemId==null?null:jdbc.sql(itemSelect()+" WHERE w.id=?").param(itemId)
-            .query((rs,n) -> workItem(rs)).optional().orElseThrow(() -> missing("归集对象"));
+            .query((rs,n) -> workItem(rs)).optional().orElseThrow(() -> missing("项目或事项"));
         authorizeNonProject(operator,type,source,departmentId,approver,initial);
         if (initial==null || !initial.ownerDepartmentId().equals(input.ownerDepartmentId())) periods.lockHistory(from,null);
         lockUser(actorId);operator=current.require();
@@ -319,9 +319,9 @@ public class MasterDataService {
                 .params(code,name,type,source,departmentId,approver,status).update();
             itemId=lastId();
         } else {
-            if (jdbc.sql("SELECT id FROM work_item WHERE id=? FOR UPDATE").param(itemId).query(Long.class).optional().isEmpty()) throw missing("归集对象");
+            if (jdbc.sql("SELECT id FROM work_item WHERE id=? FOR UPDATE").param(itemId).query(Long.class).optional().isEmpty()) throw missing("项目或事项");
             before=jdbc.sql(itemSelect()+" WHERE w.id=?").param(itemId).query((rs,n) -> workItem(rs)).single();
-            if (!before.equals(initial)) throw new ApiException(409,"STALE_VERSION","归集对象刚被其他管理员修改，请刷新后重试");
+            if (!before.equals(initial)) throw new ApiException(409,"STALE_VERSION","项目或事项刚被其他管理员修改，请刷新后重试");
             if (!before.source().equals("LOCAL") || !source.equals("LOCAL")) throw new ApiException(422,"SOURCE_READ_ONLY","OA 权威对象不能通过手工维护覆盖");
             if (!before.type().equals(type)) throw new ApiException(422,"ITEM_TYPE_IMMUTABLE","对象类型创建后不可改写，请停用旧对象并创建新对象");
         }
@@ -405,7 +405,7 @@ public class MasterDataService {
     public CalendarView saveCalendar(LocalDate date,CalendarInput input) {
         long actorId=current.requireAdmin().id();
         if (input.baseMinutes()<0 || input.baseMinutes()>480 || input.baseMinutes()%configs.forDate(date).params().stepMinutes()!=0 || input.isWorkday()!=(input.baseMinutes()>0))
-            throw new ApiException(422,"INVALID_CALENDAR","工作日基数不超过480分钟且符合当日配置步长，休息日为0");
+            throw new ApiException(422,"INVALID_CALENDAR","工作日应填工时不能超过 480 分钟，须为当天填写间隔的整数倍；休息日应为 0");
         String note=text(input.note(),200,"日历依据");
         periods.lockBaseForPopulation(date,null);
         CalendarView defaultDay=defaultCalendar(date);

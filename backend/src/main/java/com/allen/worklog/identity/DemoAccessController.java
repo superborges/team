@@ -43,7 +43,7 @@ public class DemoAccessController {
         String html=new ClassPathResource("demo-access.html").getContentAsString(StandardCharsets.UTF_8)
             .replace("{{csrf}}",HtmlUtils.htmlEscape(csrf.getToken()))
             .replace("{{target}}",target(target))
-            .replace("{{error}}","1".equals(error)?"访问账号或口令不正确，请重试。":"");
+            .replace("{{error}}","1".equals(error)?"访问账号或密码不正确，请重试。":"");
         return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(html);
     }
 

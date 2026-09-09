@@ -33,11 +33,11 @@ public class ProjectSourceLinkService {
     }
     public List<Map<String,Object>> list(){current.requireAdmin();return rows("l.work_item_id IS NOT NULL",List.of());}
     @Transactional public Map<String,Object> link(long batchId,int rowNumber,LinkInput input){
-        long actor=current.requireAdmin().id();if(input==null)throw bad("请选择核实后的归集对象");long target=DayRules.id(input.workItemId());String reason=required(input.reason(),1000,"关联依据");
+        long actor=current.requireAdmin().id();if(input==null)throw bad("请选择已核对的项目或事项");long target=DayRules.id(input.workItemId());String reason=required(input.reason(),1000,"关联依据");
         SourceRow initial=sourceRow(batchId,rowNumber,false);String sourceCode=code(initial.data().get("code")),type=initial.data().get("type");
         if(!Set.of("PROJECT","NON_PROJECT").contains(type==null?"":type))throw bad("原始来源行的对象类型无效，须先修正模板重新上传");
         Long previous=lockForApply(sourceCode);lockActor(actor);
-        var item=jdbc.sql("SELECT type FROM work_item WHERE id=? FOR SHARE").param(target).query(String.class).optional().orElseThrow(()->new ApiException(404,"WORK_ITEM_NOT_FOUND","目标归集对象不存在"));
+        var item=jdbc.sql("SELECT type FROM work_item WHERE id=? FOR SHARE").param(target).query(String.class).optional().orElseThrow(()->new ApiException(404,"WORK_ITEM_NOT_FOUND","所选项目或事项不存在"));
         if(!item.equals(type))throw bad("来源类型与目标对象类型不一致，不能通过关联更改已有类型");
         Long direct=jdbc.sql("SELECT id FROM work_item WHERE code=? FOR SHARE").param(sourceCode).query(Long.class).optional().orElse(null);
         if(direct!=null&&direct!=target)throw new ApiException(409,"PROJECT_CODE_BOUND","该编码已经属于另一个稳定对象，不能重新指向其他对象");
@@ -53,7 +53,7 @@ public class ProjectSourceLinkService {
     private SourceRow sourceRow(long batch,int number,boolean lock){
         if(lock)jdbc.sql("SELECT id FROM import_row WHERE batch_id=? AND row_no=? FOR UPDATE").params(batch,number).query(Long.class).optional().orElseThrow(()->new ApiException(404,"IMPORT_ROW_NOT_FOUND","来源行不存在"));
         return jdbc.sql("SELECT r.*,b.dataset FROM import_row r JOIN import_batch b ON b.id=r.batch_id WHERE r.batch_id=? AND r.row_no=?").params(batch,number).query((rs,n)->{
-            if(!rs.getString("dataset").equals("PROJECT"))throw bad("只能关联 PROJECT 模板中的归集对象行");
+            if(!rs.getString("dataset").equals("PROJECT"))throw bad("只能关联“项目与事项”导入模板中的记录");
             if(rs.getString("parse_error")!=null)throw bad("来源行格式错误，请修正模板后重新上传");
             return new SourceRow(rs.getLong("id"),rs.getString("state"),json.readValue(rs.getString("raw_data"),new TypeReference<Map<String,String>>(){}));
         }).optional().orElseThrow(()->new ApiException(404,"IMPORT_ROW_NOT_FOUND","来源行不存在"));

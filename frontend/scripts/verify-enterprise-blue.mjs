@@ -40,7 +40,7 @@ try {
     const base = `http://127.0.0.1:${app === 'h5' ? 5174 : 5175}/${app}/`;
     await page.goto(`${base}${app === 'admin' ? 'time' : ''}?date=${report.date}`);
     await page.locator(app === 'h5' ? '#test-person' : '#employeeNo')[app === 'h5' ? 'selectOption' : 'fill']('98123');
-    await page.getByRole('button', { name: app === 'h5' ? '进入我的工时' : '进入工作台', exact: true }).click();
+    await page.getByRole('button', { name: app === 'h5' ? '进入我的工时' : '进入系统', exact: true }).click();
     await expect(page.getByRole('textbox', { name: '记录 1 工作内容', exact: true })).toBeVisible();
     for (const width of [320, 375, 390, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: 1000 });

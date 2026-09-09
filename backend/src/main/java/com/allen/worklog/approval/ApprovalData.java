@@ -71,13 +71,13 @@ public class ApprovalData {
             r.getString("cost_level_code"),r.getString("cost_policy_version"),r.getObject("correction_request_id",Long.class),r.getLong("owner_department_id"),r.getObject("cost_rate_id",Long.class),r.getObject("cost_level_history_id",Long.class));
     }
     Pack pack(long id,boolean lock) {
-        if(lock)jdbc.sql("SELECT id FROM approval_package WHERE id=? FOR UPDATE").param(id).query(Long.class).optional().orElseThrow(()->missing("审批包"));
+        if(lock)jdbc.sql("SELECT id FROM approval_package WHERE id=? FOR UPDATE").param(id).query(Long.class).optional().orElseThrow(()->missing("审批单"));
         return jdbc.sql("""
             SELECT p.*,u.name user_name,u.employee_no,w.name item_name,w.type item_type,a.name approver_name
             FROM approval_package p JOIN app_user u ON u.id=p.user_id JOIN work_item w ON w.id=p.work_item_id JOIN app_user a ON a.id=p.approver_user_id WHERE p.id=?
             """).param(id).query((r,n)->new Pack(r.getLong("id"),r.getLong("user_id"),r.getString("employee_no"),r.getString("user_name"),r.getObject("week_start",LocalDate.class),
                 r.getLong("work_item_id"),r.getString("item_name"),r.getString("item_type"),r.getLong("approver_user_id"),r.getString("approver_name"),
-                r.getString("route_reason"),r.getObject("approval_deadline",LocalDateTime.class),r.getInt("row_version"))).optional().orElseThrow(()->missing("审批包"));
+                r.getString("route_reason"),r.getObject("approval_deadline",LocalDateTime.class),r.getInt("row_version"))).optional().orElseThrow(()->missing("审批单"));
     }
     List<Item> items(long packageId) {
         return jdbc.sql("SELECT id FROM approval_item WHERE package_id=? ORDER BY id").param(packageId).query(Long.class).list().stream().map(id->item(id,false)).toList();
@@ -92,7 +92,7 @@ public class ApprovalData {
     void requireVisible(Pack pack,CurrentUser.User actor) {
         if(actor.id()==pack.user()||actor.id()==pack.approver()||actor.canManage())return;
         if(jdbc.sql("SELECT COUNT(*) FROM approval_item WHERE package_id=? AND handled_by=?").params(pack.id(),actor.id()).query(Integer.class).single()==0)
-            throw forbidden("无权查看该审批包");
+            throw forbidden("无权查看该审批单");
     }
     boolean seesItem(Pack pack,Item item,CurrentUser.User actor) {
         return actor.canManage()||actor.id()==pack.user()||actor.id()==pack.approver()||Objects.equals(item.handledBy(),actor.id());
@@ -140,26 +140,26 @@ public class ApprovalData {
         jdbc.sql("UPDATE "+(r.kind().equals("TIME")?"time_entry":"onsite_day")+" SET current_revision_id=? WHERE id=?").params(next,r.recordId()).update();
         return revision(r.kind(),next);
     }
-    static void checkKind(String kind) {if(!Set.of("TIME","ONSITE").contains(kind==null?"":kind))throw bad("INVALID_KIND","记录类型须为 TIME 或 ONSITE");}
+    static void checkKind(String kind) {if(!Set.of("TIME","ONSITE").contains(kind==null?"":kind))throw bad("INVALID_KIND","请选择工时记录或现场日记录");}
     long lastId(){return jdbc.sql("SELECT LAST_INSERT_ID()").query(Long.class).single();}
     String name(Long user){return user==null?null:jdbc.sql("SELECT name FROM app_user WHERE id=?").param(user).query(String.class).optional().orElse(null);}
     boolean active(Long user) {return user!=null&&jdbc.sql("SELECT COUNT(*) FROM app_user WHERE id=? AND status='ACTIVE'").param(user).query(Integer.class).single()>0;}
-    void requireOtherActive(long user,long employee) {if(user==employee)throw bad("SELF_APPROVAL_FORBIDDEN","审批人必须回避本人");if(!active(user))throw bad("APPROVER_UNRESOLVED","指定接收人不存在或已停用");}
+    void requireOtherActive(long user,long employee) {if(user==employee)throw bad("SELF_APPROVAL_FORBIDDEN","不能审批自己填报的记录，请选择其他审批人");if(!active(user))throw bad("APPROVER_UNRESOLVED","指定接收人不存在或已停用");}
     Route route(long user,long item) {
         var w=jdbc.sql("SELECT type,default_approver_id,status FROM work_item WHERE id=?").param(item)
-            .query((r,n)->new ObjectRoute(r.getString("type"),r.getObject("default_approver_id",Long.class),r.getString("status"))).optional().orElseThrow(()->missing("归集对象"));
-        if(!w.status().equals("ACTIVE"))throw bad("WORK_ITEM_INACTIVE","归集对象已停用，请管理员核实后重新开放补报");
+            .query((r,n)->new ObjectRoute(r.getString("type"),r.getObject("default_approver_id",Long.class),r.getString("status"))).optional().orElseThrow(()->missing("项目或事项"));
+        if(!w.status().equals("ACTIVE"))throw bad("WORK_ITEM_INACTIVE","项目或事项已停用，请管理员核实后重新开放补报");
         Long candidate=w.approver();
-        if(candidate!=null&&candidate!=user&&active(candidate))return new Route(candidate,w.approver(),"对象默认审批人");
+        if(candidate!=null&&candidate!=user&&active(candidate))return new Route(candidate,w.approver(),"项目或事项的默认审批人");
         var dept=jdbc.sql("SELECT d.designated_manager_id,d.supervisor_user_id FROM app_user u JOIN department d ON d.id=u.department_id WHERE u.id=?")
             .param(user).query((r,n)->new DepartmentRoute(r.getObject(1,Long.class),r.getObject(2,Long.class))).single();
         if(candidate!=null&&candidate==user&&w.type().equals("PROJECT")&&dept.manager()!=null&&dept.manager()!=user&&active(dept.manager()))
-            return new Route(dept.manager(),w.approver(),"本人项目回避至填报人所属部门指定负责人");
+            return new Route(dept.manager(),w.approver(),"本人不能审批，交由所属部门的指定负责人审批");
         if(candidate!=null&&candidate==user&&(!w.type().equals("PROJECT")||Objects.equals(dept.manager(),user))&&dept.supervisor()!=null&&dept.supervisor()!=user&&active(dept.supervisor()))
-            return new Route(dept.supervisor(),w.approver(),"本人回避至填报人所属部门分管领导");
+            return new Route(dept.supervisor(),w.approver(),"本人不能审批，交由所属部门的分管领导审批");
         Long designated=jdbc.sql("SELECT approver_user_id FROM approval_designation WHERE user_id=? AND work_item_id=?").params(user,item).query(Long.class).optional().orElse(null);
-        if(designated!=null&&designated!=user&&active(designated))return new Route(designated,w.approver(),"按公司业务指定承接当前人员及对象范围");
-        throw bad("APPROVER_UNRESOLVED","缺少有效非本人审批人，请管理员核实默认负责人或登记公司指定");
+        if(designated!=null&&designated!=user&&active(designated))return new Route(designated,w.approver(),"由公司为该员工和项目或事项指定的审批人处理");
+        throw bad("APPROVER_UNRESOLVED","尚未安排有效审批人，请联系管理员设置。审批人不能是填报人本人");
     }
     Route routeForSubmission(long user,LocalDate week,long item) {
         var rows=jdbc.sql("""

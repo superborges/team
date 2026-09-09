@@ -60,7 +60,7 @@ class DemoAccessControllerTest {
         String page=controller.page("https://example.com/steal","1",token).getBody();
         assertNotNull(page);
         assertTrue(page.contains("&quot;&lt;script&gt;"));
-        assertTrue(page.contains("访问账号或口令不正确，请重试。"));
+        assertTrue(page.contains("访问账号或密码不正确，请重试。"));
         assertFalse(page.contains("example.com"));
         assertFalse(page.contains("{{csrf}}"));
         assertFalse(page.contains("{{target}}"));

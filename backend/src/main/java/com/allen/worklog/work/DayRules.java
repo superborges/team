@@ -30,7 +30,7 @@ public final class DayRules {
         int total=entries.stream().mapToInt(Entry::minutes).sum();
         int actual=entries.stream().filter(e->!e.kind().equals("IDLE")).mapToInt(Entry::minutes).sum();
         if(!enrolled)errors.add("该日期不在你的填报适用区间内");
-        if(total<required)errors.add("尚缺 "+hours(required-total)+" 小时，请补充工作或明确待分配时间");
+        if(total<required)errors.add("尚缺 "+hours(required-total)+" 小时，请补填工作记录或待安排工作的时间");
         if(total>limit)errors.add("单日填报不能超过 "+hours(limit)+" 小时");
         for(Entry entry:entries) {
             if(!entry.kind().equals("IDLE")&&entry.action().equals("REPORT")) {
@@ -41,7 +41,7 @@ public final class DayRules {
             if(entry.minutes()>480)warnings.add(entry.workItemName()+"：单条超过 8 小时，请核对");
         }
         if(actual>red) {
-            warnings.add("实际工作超过 "+hours(red)+" 小时，后续核实时持续标记");
+            warnings.add("实际工作超过 "+hours(red)+" 小时，审批时会提醒负责人核对");
             if(entries.stream().filter(e->!e.kind().equals("IDLE")).noneMatch(e->!e.redReason().isBlank()))
                 errors.add("实际工作超过 "+hours(red)+" 小时，请填写原因说明");
         }
@@ -60,11 +60,11 @@ public final class DayRules {
             if(leave.minutes()<0 || leave.minutes()>480 || (!slotsMissing &&
                 (leave.start()==null || leave.end()==null || leave.start()<0 || leave.end()>1440 ||
                  leave.end()<=leave.start() || leave.end()-leave.start()!=leave.minutes())))
-                throw new ApiException(422,"INVALID_LEAVE","请假时数与核实时段不一致，请检查来源");
+                throw new ApiException(422,"INVALID_LEAVE","请假时长与已核实的起止时间不一致，请检查请假数据");
         }
         if(leaves.size()==1)return Math.min(leaves.getFirst().minutes(),baseMinutes);
         if(leaves.stream().anyMatch(l->l.start()==null || l.end()==null))
-            throw new ApiException(422,"LEAVE_NEEDS_REVIEW","同日多笔请假缺少已核实的时段，需管理员核实基数后继续");
+            throw new ApiException(422,"LEAVE_NEEDS_REVIEW","同一天有多笔请假，但缺少起止时间。请联系管理员核实当天应填工时后再试");
         boolean[] covered=new boolean[1440];
         for(LeaveSegment leave:leaves)for(int minute=leave.start();minute<leave.end();minute++)covered[minute]=true;
         int total=0;for(boolean minute:covered)if(minute)total++;
