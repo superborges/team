@@ -7,6 +7,9 @@ set -euo pipefail
 repo_dir="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$repo_dir"
 
+# shellcheck source=.cursor/docker-lib.sh
+. "$repo_dir/.cursor/docker-lib.sh"
+
 log() { printf '\n=== %s ===\n' "$*"; }
 
 # 1. Docker engine + compose plugin (skip when already present).
@@ -43,11 +46,22 @@ fi
 sudo groupadd -f docker
 sudo usermod -aG docker "$(id -un)" || true
 
-# 4. Frontend dependencies (npm workspaces).
+# 4. Pre-pull the MySQL + Redis images so their layers are baked into the build
+#    snapshot. With environment builds this runs once at build time, letting new
+#    agents start the infra without a per-boot `docker pull`. Best-effort: if the
+#    daemon cannot start during a build, start.sh will pull the images on boot.
+log "Pre-pulling infrastructure images"
+if ensure_dockerd; then
+  docker compose -f deploy/compose.local.yml pull || echo "WARN: image pre-pull failed; start.sh will pull on boot."
+else
+  echo "WARN: Docker daemon unavailable during install; start.sh will pull images on boot."
+fi
+
+# 5. Frontend dependencies (npm workspaces).
 log "Installing frontend dependencies"
 npm --prefix frontend ci
 
-# 5. Warm the Maven cache and produce an initial backend build so the first
+# 6. Warm the Maven cache and produce an initial backend build so the first
 #    start is fast. Uses the repo's serialized build wrapper.
 log "Warming backend build"
 python3 scripts/check-backend.py -q -DskipTests package
