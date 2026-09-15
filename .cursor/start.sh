@@ -7,25 +7,14 @@ set -euo pipefail
 repo_dir="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$repo_dir"
 
+# shellcheck source=.cursor/docker-lib.sh
+. "$repo_dir/.cursor/docker-lib.sh"
+
 log() { printf '\n=== %s ===\n' "$*"; }
 
-# 1. Start the Docker daemon if it is not already serving. There is no systemd
-#    in this container, so run dockerd directly and detach it.
-if ! docker info >/dev/null 2>&1; then
-  log "Starting Docker daemon"
-  sudo nohup dockerd >/tmp/dockerd.log 2>&1 &
-  for _ in $(seq 1 30); do
-    if sudo docker info >/dev/null 2>&1; then break; fi
-    sleep 1
-  done
-fi
-
-# Make the socket reachable for the agent user in this dev VM.
-if [[ -S /var/run/docker.sock ]]; then
-  sudo chmod 666 /var/run/docker.sock || true
-fi
-
-if ! docker info >/dev/null 2>&1; then
+# 1. Start the Docker daemon if it is not already serving.
+log "Starting Docker daemon"
+if ! ensure_dockerd; then
   echo "Docker daemon did not become ready; see /tmp/dockerd.log" >&2
   exit 1
 fi
