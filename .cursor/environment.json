@@ -1,0 +1,33 @@
+{
+  "name": "工时与项目成本管理系统",
+  "user": "ubuntu",
+  "install": "./.cursor/install.sh",
+  "start": "./.cursor/start.sh",
+  "terminals": [
+    {
+      "name": "api",
+      "command": "./scripts/start-local-api.sh",
+      "description": "Spring Boot API (profiles local,api) on http://127.0.0.1:8080. Builds an immutable JAR snapshot, runs Flyway migrations and local seed, then serves."
+    },
+    {
+      "name": "worker",
+      "command": "bash -lc 'until [ -f .local/run/api-artifact.path ] && curl -sf http://127.0.0.1:8080/actuator/health >/dev/null 2>&1; do sleep 3; done; ./scripts/start-local-worker.sh'",
+      "description": "Background worker (profiles local,worker). Waits for the API artifact and health, then reuses the same JAR snapshot to run auto-submit, closing, exports and reminders."
+    },
+    {
+      "name": "admin",
+      "command": "npm --prefix frontend run dev:admin",
+      "description": "Vue 3 + Element Plus admin console on http://127.0.0.1:5175/admin/ (proxies /api to 8080)."
+    },
+    {
+      "name": "h5",
+      "command": "npm --prefix frontend run dev:h5",
+      "description": "Vue 3 + Vant mobile H5 layout on http://127.0.0.1:5174/h5/ (proxies /api to 8080)."
+    }
+  ],
+  "ports": [
+    { "name": "api", "port": 8080 },
+    { "name": "h5", "port": 5174 },
+    { "name": "admin", "port": 5175 }
+  ]
+}
