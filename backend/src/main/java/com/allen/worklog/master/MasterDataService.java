@@ -238,7 +238,9 @@ public class MasterDataService {
             jdbc.sql("INSERT INTO work_item_history(work_item_id,owner_department_id,valid_from) VALUES(?,?,?)").params(idle,departmentId,today()).update();
             record(actorId,"DEPARTMENT_IDLE_CREATED","WORK_ITEM",idle,null,Map.of("departmentId",departmentId,"type","IDLE"),"为部门预置待分配对象");
         } else {
-            jdbc.sql("UPDATE work_item SET default_approver_id=? WHERE owner_department_id=? AND type='IDLE'").params(manager,departmentId).update();
+            // The department's idle object tracks the department's own active state so a
+            // deactivated department is no longer fileable, mirroring the create path above.
+            jdbc.sql("UPDATE work_item SET default_approver_id=?,status=? WHERE owner_department_id=? AND type='IDLE'").params(manager,status,departmentId).update();
         }
         record(actorId,"DEPARTMENT_SAVED","DEPARTMENT",departmentId,before,after,"管理员维护组织与新送审默认负责人");
         return after;
