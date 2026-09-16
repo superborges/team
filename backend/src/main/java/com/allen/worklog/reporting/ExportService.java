@@ -2,6 +2,7 @@ package com.allen.worklog.reporting;
 
 import com.allen.worklog.common.*;
 import com.allen.worklog.operations.JobService;
+import com.allen.worklog.operations.SystemExecution;
 import java.io.*;
 import java.nio.file.*;
 import java.time.*;
@@ -33,12 +34,17 @@ public class ExportService {
     public List<Map<String,Object>> list() {var scope=access.current();return jdbc.sql("SELECT CAST(id AS CHAR) id,state,report_kind kind,created_at createdAt,finished_at finishedAt,error_message error FROM export_request WHERE requested_by=? ORDER BY export_request.id DESC LIMIT 100").param(scope.userId()).query().listOfRows().stream().map(this::withUrl).toList();}
     public Map<String,Object> get(long id) {long actor=access.current().userId();return withUrl(jdbc.sql("SELECT CAST(id AS CHAR) id,state,report_kind kind,created_at createdAt,finished_at finishedAt,error_message error FROM export_request WHERE id=? AND requested_by=?").params(id,actor).query().listOfRows().stream().findFirst().orElseThrow(()->new ApiException(404,"EXPORT_NOT_FOUND","导出任务不存在")));}
     private Map<String,Object> withUrl(Map<String,Object> source) {var m=new LinkedHashMap<>(source);m.put("downloadUrl","SUCCEEDED".equals(source.get("state"))?"/api/v1/exports/"+source.get("id")+"/download":null);return m;}
-    public void generate(long id) {
+    public void generate(long id,long jobId) {
         String token=UUID.randomUUID().toString();Request request=tx.execute(status->{
             Request r=request(id,true);if(r.state().equals("SUCCEEDED"))return null;
             jdbc.sql("UPDATE export_request SET state='RUNNING',generation_token=?,error_message=NULL WHERE id=?").params(token,id).update();return r;
         });
-        if(request==null)return;Path temp=null,target=null;
+        if(request==null)return;
+        // Worker-run generation is a system action tied to its job; record provenance on behalf of the requester.
+        SystemExecution.runAs(request.user(),jobId,()->{generateFile(id,token,request);return null;});
+    }
+    private void generateFile(long id,String token,Request request) {
+        Path temp=null,target=null;
         try {
             ReportingAccess.Scope scope=access.forUser(request.user()).intersect(request.scope());
             Report report=reports.readPinned(request.query(),scope);

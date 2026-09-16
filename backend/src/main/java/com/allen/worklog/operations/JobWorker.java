@@ -50,7 +50,7 @@ public class JobWorker {
                 if(!result.failed().isEmpty())notices.automaticFailure(user,job.id(),LocalDate.parse(p.get("weekStart").toString()),result.failed().size(),"上周自动送审部分未通过，请核对："+result.failed().stream().map(f->f.date()+" "+f.message()).collect(java.util.stream.Collectors.joining("；")));
                 yield result;
             }
-            case "EXPORT" -> {exports.generate(Long.parseLong(p.get("exportId").toString()));yield Map.of("generated",true);}
+            case "EXPORT" -> {exports.generate(Long.parseLong(p.get("exportId").toString()),job.id());yield Map.of("generated",true);}
             case "MONTH_CLOSE" -> SystemExecution.runAs(admin(),job.id(),()->{closing.closeScheduled(LocalDate.parse(p.get("month").toString()));return Map.of("closed",true);});
             case "REMINDER" -> reminders.perform(p.get("rule").toString(),LocalDate.parse(p.get("date").toString()),job.id());
             default -> throw new IllegalArgumentException("Unsupported persistent job type");
