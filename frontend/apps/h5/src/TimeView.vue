@@ -105,11 +105,11 @@ onBeforeUnmount(() => { window.removeEventListener('beforeunload', beforeUnload)
         <div class="day-heading"><h2>{{ shortDate }} <small>{{ day.editable ? '可填写' : '只读' }}</small></h2><span>{{ day.isWorkday ? '工作日' : '非工作日' }}</span></div>
         <div class="mobile-totals">
           <div data-summary="required"><span>最低应填</span><strong>{{ hours(day.requiredMinutes) }}<small>h</small></strong></div>
-          <div data-summary="explained"><span>已填</span><strong>{{ total }}<small>h</small></strong></div>
-          <div data-summary="remaining" :class="{ shortage: total * 60 < day.requiredMinutes }"><span>还需填写</span><strong>{{ Math.max(0, day.requiredMinutes / 60 - total) }}<small>h</small></strong></div>
+          <div data-summary="explained"><span>已填</span><strong>{{ hours(total * 60) }}<small>h</small></strong></div>
+          <div data-summary="remaining" :class="{ shortage: total * 60 < day.requiredMinutes }"><span>还需填写</span><strong>{{ hours(Math.max(0, day.requiredMinutes - total * 60)) }}<small>h</small></strong></div>
         </div>
         <div class="day-completeness">
-          <div v-if="day.requiredMinutes > 0" class="explanation-track" role="progressbar" aria-label="工时填写进度" :aria-valuenow="explanationProgress" :aria-valuetext="`最低应填 ${hours(day.requiredMinutes)} 小时，已填 ${total} 小时`" :aria-valuemin="0" :aria-valuemax="100"><span :style="{ width: `${explanationProgress}%` }"></span></div>
+          <div v-if="day.requiredMinutes > 0" class="explanation-track" role="progressbar" aria-label="工时填写进度" :aria-valuenow="explanationProgress" :aria-valuetext="`最低应填 ${hours(day.requiredMinutes)} 小时，已填 ${hours(total * 60)} 小时`" :aria-valuemin="0" :aria-valuemax="100"><span :style="{ width: `${explanationProgress}%` }"></span></div>
           <p>{{ day.requiredMinutes === 0 ? '当天没有最低工时要求' : total * 60 >= day.requiredMinutes ? '时长已填齐；提交前还会检查填写内容。' : '请补填实际工作或当天没有任务安排的时间。' }}</p>
         </div>
         <div class="mobile-breakdown" aria-label="时间构成">
@@ -118,12 +118,12 @@ onBeforeUnmount(() => { window.removeEventListener('beforeunload', beforeUnload)
           <div data-summary="idle"><span>待安排工作</span><strong>{{ hours(idle * 60) }}<small>h</small></strong></div>
           <div data-summary="leave"><span>请假</span><strong>{{ hours(day.leaveMinutes) }}<small>h</small></strong></div>
         </div>
-        <div class="summary-caption"><p><span>实际工作 {{ actual }}h</span><span v-if="unclassifiedHours > 0">（含待确认分类 {{ hours(unclassifiedHours * 60) }}h）</span><span v-else>（项目工作＋非项目工作）</span></p><p>以上数据含草稿和未保存的修改；已填工时不含请假。</p></div>
+        <div class="summary-caption"><p><span>实际工作 {{ hours(actual * 60) }}h</span><span v-if="unclassifiedHours > 0">（含待确认分类 {{ hours(unclassifiedHours * 60) }}h）</span><span v-else>（项目工作＋非项目工作）</span></p><p>以上数据含草稿和未保存的修改；已填工时不含请假。</p></div>
         <p class="day-approval"><span>审批进度</span><strong>{{ reviewProgress(day) || '暂无已提交记录' }}</strong><small v-if="day.periodStatus !== 'OPEN'">{{ day.periodStatus === 'CLOSED' ? '月份已封账' : '已到封账时间' }}</small></p>
         <p v-if="!day.editable" class="read-only">{{ !day.enrolled ? '当天不在你的填报日期范围内。' : '当天记录不可修改，可能已到封账时间。' }}</p>
       </section>
       <section class="mobile-onsite" aria-labelledby="onsite-title">
-        <div class="onsite-heading"><h2 id="onsite-title">现场日</h2><span v-if="day.onsite" class="entry-tag" :data-state="day.onsite.state">{{ statusLabel(day.onsite.state) }}</span></div>
+        <div class="onsite-heading"><h2 id="onsite-title">现场日</h2><span v-if="day.onsite" class="entry-tag" :data-state="day.onsite.state">{{ statusLabel(day.onsite.state) }}{{ day.onsite.action === 'CANCEL' ? ' · 取消申报' : '' }}</span></div>
         <VanCheckbox aria-label="当天因项目出差" :model-value="!!onsite" :disabled="!day.editable || day.onsite?.editable === false || day.onsite?.action === 'CANCEL' || busy" @update:model-value="toggleOnsite">当天因项目出差</VanCheckbox>
         <p class="onsite-help">含出差交通和因项目需要停留的日期，每人每天最多记录 1 个现场日。工时另填，现场日可单独审批。</p>
         <template v-if="onsite">
