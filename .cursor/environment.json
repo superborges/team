@@ -16,13 +16,13 @@
     },
     {
       "name": "admin",
-      "command": "npm --prefix frontend run dev:admin",
-      "description": "Vue 3 + Element Plus admin console on http://127.0.0.1:5175/admin/ (proxies /api to 8080)."
+      "command": "bash -lc 'cd frontend && npm exec --workspace @worktime/admin -- vite --host 0.0.0.0'",
+      "description": "Vue 3 + Element Plus admin console on port 5175 at /admin/ (proxies /api to 8080). Binds 0.0.0.0 so Cursor port forwarding can reach it; open the forwarded 5175 at /admin/."
     },
     {
       "name": "h5",
-      "command": "npm --prefix frontend run dev:h5",
-      "description": "Vue 3 + Vant mobile H5 layout on http://127.0.0.1:5174/h5/ (proxies /api to 8080)."
+      "command": "bash -lc 'cd frontend && npm exec --workspace @worktime/h5 -- vite --host 0.0.0.0'",
+      "description": "Vue 3 + Vant mobile H5 layout on port 5174 at /h5/ (proxies /api to 8080). Binds 0.0.0.0 so Cursor port forwarding can reach it; open the forwarded 5174 at /h5/."
     }
   ],
   "ports": [
