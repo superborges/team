@@ -67,6 +67,8 @@ class ReportingDatabaseTest {
         });
     }
     Query q(Fixture f,String kind,String mode) {return new Query(kind,f.month(),f.month().plusMonths(1).minusDays(1),mode,List.of(),null,null,null,null,"DAY");}
+    long jobFor(long exportId) {return jdbc.sql("SELECT id FROM job WHERE business_key=?").param("export:"+exportId).query(Long.class).single();}
+    void gen(long exportId) {exports.generate(exportId,jobFor(exportId));}
     @Test void fiveReportsUseConfirmedCostsCurrentScopesAndExplicitOaCoverage() {
         Fixture f=fixture();as(4);
         var cost=reports.read(q(f,"project-costs","CURRENT"));assertEquals("1550.00",cost.summary().get("totalCost"));assertEquals(1,cost.rows().getFirst().get("participants"));
@@ -119,13 +121,13 @@ class ReportingDatabaseTest {
         assertFalse(((List<?>)closing.diff(f.month(),Long.parseLong(v2.id())).get("rows")).isEmpty());
     }
     @Test void asynchronousXlsxPinsScopeAndDownloadRechecksCurrentAuthority() throws Exception {
-        Fixture f=fixture();as(2);var requested=createExport(q(f,"project-costs","CURRENT"));long exportId=Long.parseLong(requested.get("id").toString());assertEquals("QUEUED",requested.get("state"));exports.generate(exportId);exports.generate(exportId);
+        Fixture f=fixture();as(2);var requested=createExport(q(f,"project-costs","CURRENT"));long exportId=Long.parseLong(requested.get("id").toString());assertEquals("QUEUED",requested.get("state"));gen(exportId);gen(exportId);
         var file=exports.download(exportId);try(var workbook=new XSSFWorkbook(file.toFile())) {assertEquals("1550.00",workbook.getSheet("数据").getRow(1).getCell(12).getStringCellValue());assertNotNull(workbook.getSheet("口径与版本"));}
         as(f.user());assertThrows(ApiException.class,()->exports.download(exportId));as(2);
         tx.executeWithoutResult(s->jdbc.sql("UPDATE work_item SET default_approver_id=4 WHERE id=?").param(f.project()).update());
         assertThrows(ApiException.class,()->exports.download(exportId));
         // No published month at enqueue remains missing even if V1 is published before generation.
-        as(4);long empty=Long.parseLong(createExport(q(f,"project-costs","FORMAL")).get("id").toString());close(f);exports.generate(empty);
+        as(4);long empty=Long.parseLong(createExport(q(f,"project-costs","FORMAL")).get("id").toString());close(f);gen(empty);
         try(var workbook=new XSSFWorkbook(exports.download(empty).toFile())) {assertEquals(0,workbook.getSheet("数据").getLastRowNum());}
     }
     @Test void concurrentClosePublishesOneVersionAndUnprivilegedActorsCannotGrant() throws Exception {
@@ -157,9 +159,26 @@ class ReportingDatabaseTest {
         assertEquals("INCOMPLETE",reports.read(q(f,"workload","CURRENT")).rows().getFirst().get("status"));
         tx.executeWithoutResult(s->jdbc.sql("UPDATE source_record SET application_state='APPLIED' WHERE source_key=? AND source_version='received'").param(f.marker()).update());
         assertEquals("CONFIRMED",reports.read(q(f,"workload","CURRENT")).rows().getFirst().get("status"));
-        long export=Long.parseLong(createExport(q(f,"workload","CURRENT")).get("id").toString());exports.generate(export);var path=exports.download(export);
+        long export=Long.parseLong(createExport(q(f,"workload","CURRENT")).get("id").toString());gen(export);var path=exports.download(export);
         tx.executeWithoutResult(s->jdbc.sql("UPDATE export_request SET expires_at=DATE_SUB(UTC_TIMESTAMP(6),INTERVAL 1 SECOND) WHERE id=?").param(export).update());
         assertEquals(410,assertThrows(ApiException.class,()->exports.download(export)).status());assertTrue(exports.cleanupExpired()>0);assertFalse(java.nio.file.Files.exists(path));assertEquals("SUCCEEDED",exports.get(export).get("state"));
+    }
+    @Test void backgroundExportGenerationIsAttributedToSystemAndItsJob() {
+        Fixture f=fixture();as(2);
+        long exportId=Long.parseLong(createExport(q(f,"project-costs","CURRENT")).get("id").toString());
+        long jobId=jobFor(exportId);
+        exports.generate(exportId,jobId);
+        // Worker-run generation is a system action tied to its job, not a user interaction, with the requester as target.
+        var generated=jdbc.sql("SELECT actor_type,actor_id,job_id,target_user_id FROM audit_event WHERE action='EXPORT_GENERATED' AND object_type='EXPORT' AND object_id=?").param(Long.toString(exportId)).query().singleRow();
+        assertEquals("SYSTEM",generated.get("actor_type"));
+        assertNull(generated.get("actor_id"));
+        assertEquals(jobId,((Number)generated.get("job_id")).longValue());
+        assertEquals(2L,((Number)generated.get("target_user_id")).longValue());
+        // The user-initiated request stays attributed to the requesting user.
+        var requestedAudit=jdbc.sql("SELECT actor_type,actor_id,job_id FROM audit_event WHERE action='EXPORT_REQUESTED' AND object_type='EXPORT' AND object_id=?").param(Long.toString(exportId)).query().singleRow();
+        assertEquals("USER",requestedAudit.get("actor_type"));
+        assertEquals(2L,((Number)requestedAudit.get("actor_id")).longValue());
+        assertNull(requestedAudit.get("job_id"));
     }
 
 }
